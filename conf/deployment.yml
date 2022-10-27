@@ -51,7 +51,7 @@ environments:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
         schedule:
-          quartz_cron_expression: 0 0/30 * * * ?
+          quartz_cron_expression: 0 0 0/2 * * ? # every 2 hours
           timezone_id: Europe/Kiev
           pause_status: UNPAUSED            
         tasks:
