@@ -29,7 +29,7 @@ inference_task: # TODO:
 	# dbx launch --job=cd-infer-job-staging --trace
 
 # For executions within the CI/CD pipeline
-train_workflow:
+etl_workflow:
 	dbx deploy etl-workflow
 	dbx launch etl-workflow --trace	
 
