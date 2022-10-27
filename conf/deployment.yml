@@ -1,71 +1,123 @@
+# JOB API V2.1
 # Custom section is used to store configurations that might be repetative.
 # Please read YAML documentation for details on how to use substitutions and anchors.
 custom:
   basic-cluster-props: &basic-cluster-props
     spark_version: "10.4.x-cpu-ml-scala2.12"
+    num_workers: 1
+    # node_type_id: "Standard_E8_v3"
+    # init_scripts:
+    #   - dbfs:
+    #       destination: "dbfs:/databricks/scripts/external-metastore.sh"    
 
-  basic-static-cluster: &basic-static-cluster
+  dev-pool-cluster: &dev-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
-      num_workers: 1
-      node_type_id: "i3.xlarge"
+      instance_pool_id: "0504-155324-goon210-pool-p1whoqep"
+
+  staging-pool-cluster: &staging-pool-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      instance_pool_id: "0520-103527-swamp3-pool-8kkbt5ma"
+
+  prod-pool-cluster: &prod-pool-cluster
+    new_cluster:
+      <<: *basic-cluster-props
+      instance_pool_id: "0520-103936-jokes3-pool-46dtg4oi"            
+
 
 environments:
   default:
     workflows:
-      #######################################################################################
-      #   Example workflow for integration tests                                            #
-      #######################################################################################
-      - name: "databricks-poc-template-sample-tests"
-        tasks:
-          - task_key: "main"
-            <<: *basic-static-cluster
-            spark_python_task:
-                python_file: "file://tests/entrypoint.py"
-                # this call supports all standard pytest arguments
-                parameters: ["file:fuse://tests/integration", "--cov=databricks_poc_template"]
-      #######################################################################################
-      # this is an example job with single ETL task based on 2.1 API and wheel_task format #
-      ######################################################################################
-      - name: "databricks-poc-template-sample-etl"
-        tasks:
-          - task_key: "main"
-            <<: *basic-static-cluster
-            python_wheel_task:
-              package_name: "databricks_poc_template"
-              entry_point: "etl" # take a look at the setup.py entry_points section for details on how to define an entrypoint
-              parameters: ["--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml"]
       #############################################################
-      # this is an example multitask job with notebook task       #
+      # CI train workflow
       #############################################################
-      - name: "databricks-poc-template-sample-multitask"
+      - name: "etl-workflow"
         job_clusters:
           - job_cluster_key: "default"
-            <<: *basic-static-cluster
+            <<: *dev-pool-cluster
         tasks:
-          - task_key: "etl"
+          - task_key: "step-etl-1-task"
+            description: "Step etl-1"
+            job_cluster_key: "default"
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/etl_1_data_generation.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/etl_1_data_generation.yml" ]      
+      - name: "train-workflow"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *dev-pool-cluster
+        tasks:
+          - task_key: "step-training-task"
+            description: "Step Training"
+            job_cluster_key: "default"
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_training.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]
+          - task_key: "step-validation-task"
+            depends_on:
+              - task_key: "step-training-task"
+            job_cluster_key: "default"
+            max_retries: 0            
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_validation.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]
+
+      - name: "inference-workflow-dev"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *dev-pool-cluster
+        tasks:
+          - task_key: "step-infer-task"
+            description: "Step Inference Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]         
+
+      - name: "inference-workflow-staging"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *staging-pool-cluster
+        tasks:
+          - task_key: "step-infer-task"
+            description: "Step Inference Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]            
+
+      - name: "inference-workflow-prod"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *prod-pool-cluster
+        tasks:
+          - task_key: step-transition-to-prod
+            description: step transition to prod task
             job_cluster_key: "default"
             spark_python_task:
-              python_file: "file://databricks_poc_template/tasks/sample_etl_task.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml" ]
-          - task_key: "ml"
-            depends_on:
-              - task_key: "etl"
-            job_cluster_key: "default"
-            python_wheel_task:
-              package_name: "databricks_poc_template"
-              entry_point: "ml"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_ml_config.yml" ]
-          ###############################################################################
-          # this is an example task based on the notebook                               #
-          # Please note that first you'll need to add a Repo and commit notebook to it. #
-          ###############################################################################
-          - task_key: "notebook"
-            deployment_config:
-              no_package: true # we omit using package since code will be shipped directly from the Repo
-            depends_on:
-              - task_key: "ml"
-            job_cluster_key: "default"
-            notebook_task:
-              notebook_path: "/Repos/Staging/databricks_poc_template/notebooks/sample_notebook"
+              python_file: "file://cicd_databricks_github/tasks/step_transition_to_prod.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]              
 
+          - task_key: "step-infer-task"
+            depends_on:
+              - task_key: "step-transition-to-prod"          
+            description: "Step Inference Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]                               
