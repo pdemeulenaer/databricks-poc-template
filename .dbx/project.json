@@ -1,0 +1,14 @@
+{
+    "environments": {
+        "default": {
+            "profile": "DEFAULT",
+            "storage_type": "mlflow",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/databricks_poc_template",
+                "artifact_location": "dbfs:/Shared/dbx/projects/databricks_poc_template"
+            }
+        }
+    },
+    "inplace_jinja_support": false,
+    "failsafe_cluster_reuse_with_assets": false
+}
