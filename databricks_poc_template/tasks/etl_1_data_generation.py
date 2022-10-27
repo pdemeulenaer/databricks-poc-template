@@ -67,8 +67,8 @@ class ETL1DataGenerationTask(Task):
         # 2. Write the data batch to a Table in Hive Metastore
         # ====================================================        
         self.logger.info(f"Writing data batch to {db}.{table}")
-        raw_data_batch.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db}.{raw_data_table}")
-        label_batch.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db}.{label_table}")
+        raw_data_batch.write.format("delta").mode("append").option("overwriteSchema", "true").saveAsTable(f"{db}.{raw_data_table}")
+        label_batch.write.format("delta").mode("append").option("overwriteSchema", "true").saveAsTable(f"{db}.{label_table}")
         self.logger.info("Dataset successfully written")
 
     def launch(self):
