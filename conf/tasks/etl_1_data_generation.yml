@@ -1,3 +1,4 @@
 output:
   database: "default"
-  table: "sklearn_housing"
+  raw_data_table: "raw_data_table"
+  label_table: "label_table"
