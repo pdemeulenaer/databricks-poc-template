@@ -29,6 +29,7 @@ custom:
 environments:
   default:
     workflows:
+    
       #############################################################
       # CI train workflow
       #############################################################
@@ -42,8 +43,9 @@ environments:
             job_cluster_key: "default"
             max_retries: 0
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/etl_1_data_generation.py"
+              python_file: "file://databricks_poc_template/tasks/etl_1_data_generation.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/etl_1_data_generation.yml" ]      
+
       - name: "train-workflow"
         job_clusters:
           - job_cluster_key: "default"
