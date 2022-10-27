@@ -29,7 +29,7 @@ custom:
 environments:
   default:
     workflows:
-    
+
       #############################################################
       # CI train workflow
       #############################################################
@@ -50,6 +50,10 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
+        schedule:
+          quartz_cron_expression: 0 0/30 * * * ?
+          timezone_id: Europe/Kiev
+          pause_status: UNPAUSED            
         tasks:
           - task_key: "step-training-task"
             description: "Step Training"
