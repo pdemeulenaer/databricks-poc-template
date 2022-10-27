@@ -37,6 +37,10 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
+        schedule:
+          quartz_cron_expression: 0 0 0/2 * * ? # every 2 hours
+          timezone_id: Europe/Kiev
+          pause_status: UNPAUSED              
         tasks:
           - task_key: "step-etl-1-task"
             description: "Step etl-1"
@@ -49,11 +53,7 @@ environments:
       - name: "train-workflow"
         job_clusters:
           - job_cluster_key: "default"
-            <<: *dev-pool-cluster
-        schedule:
-          quartz_cron_expression: 0 0 0/2 * * ? # every 2 hours
-          timezone_id: Europe/Kiev
-          pause_status: UNPAUSED            
+            <<: *dev-pool-cluster          
         tasks:
           - task_key: "step-training-task"
             description: "Step Training"
