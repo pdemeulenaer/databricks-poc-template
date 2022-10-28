@@ -43,12 +43,19 @@ environments:
           pause_status: UNPAUSED              
         tasks:
           - task_key: "step-etl-1-task"
-            description: "Step etl-1"
+            description: "Step etl-1: data generation"
             job_cluster_key: "default"
             max_retries: 0
             spark_python_task:
               python_file: "file://databricks_poc_template/tasks/etl_1_data_generation.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/etl_1_data_generation.yml" ]      
+          - task_key: "step-etl-2-task"
+            description: "Step etl-2: features generation"
+            job_cluster_key: "default"
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://databricks_poc_template/tasks/etl_2_feature_generation.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/etl_2_feature_generation.yml" ]                 
 
       - name: "train-workflow"
         job_clusters:
