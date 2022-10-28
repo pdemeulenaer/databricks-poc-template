@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import seaborn as sns
 from sklearn import cluster, datasets
+from sklearn.preprocessing import StandardScaler
 from sklearn.mixture import BayesianGaussianMixture
 from mlflow.tracking import MlflowClient
 from delta.tables import DeltaTable
