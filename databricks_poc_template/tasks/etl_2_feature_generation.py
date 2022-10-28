@@ -50,10 +50,10 @@ class ETL2FeatureGenerationTask(Task):
         spark.sql(f"CREATE SCHEMA IF NOT EXISTS {fs_schema}") 
 
         # If the feature table does not exists, create it
-        if not spark.catalog._jcatalog.tableExists(fs_table):
-            print("Created feature table: ", fs_table)
+        if not spark.catalog._jcatalog.tableExists(f"{fs_schema}.{fs_table}"):
+            print("Created feature table: ", f"{fs_schema}.{fs_table}")
             fs.create_table(
-                name=fs_table,
+                name=f"{fs_schema}.{fs_table}",
                 primary_keys=["Id", "hour"],
                 df=features_df,
                 partition_columns="date",
@@ -61,9 +61,9 @@ class ETL2FeatureGenerationTask(Task):
             )
         else:
             # Update the feature store table (update only specific rows)
-            print("Updated feature table: ", fs_table)
+            print("Updated feature table: ", f"{fs_schema}.{fs_table}")
             fs.write_table(
-                name=fs_table,
+                name=f"{fs_schema}.{fs_table}",
                 df=features_df,
                 mode="merge",
             )               
