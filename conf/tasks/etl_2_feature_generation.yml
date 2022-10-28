@@ -1,0 +1,6 @@
+input:
+  database: "default"
+  raw_data_table: "raw_data_table"
+output:
+  fs_schema: "feature_store_poc_template1"
+  fs_table: "scaled_features"

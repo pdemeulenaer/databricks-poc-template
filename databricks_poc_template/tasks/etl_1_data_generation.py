@@ -14,6 +14,8 @@ class ETL1DataGenerationTask(Task):
         # ===========================
         # 0. Reading the config files
         # ===========================
+
+        # Output
         db = self.conf["output"].get("database", "default")
         raw_data_table = self.conf["output"]["raw_data_table"]
         label_table = self.conf["output"]["label_table"]
