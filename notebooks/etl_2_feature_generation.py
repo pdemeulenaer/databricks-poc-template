@@ -7,54 +7,14 @@ from databricks_poc_template import module
 
 # COMMAND ----------
 
-def scaled_features_fn(df):
-    """
-    Computes the scaled_features feature group.
-    To restrict features to a time range, pass in ts_column, start_date, and/or end_date as kwargs.
-    """
-
-    pdf = df.toPandas()
-    id = pdf["Id"]
-    date = pdf["date"]
-    hour = pdf["hour"]
-    # timestamp = pdf['timestamp']
-    # unix_ts = pdf['unix_ts']
-    # target = pdf['target']
-    pdf.drop("Id", axis=1, inplace=True)
-    pdf.drop("date", axis=1, inplace=True)
-    pdf.drop("hour", axis=1, inplace=True)
-    # pdf.drop('timestamp', axis=1, inplace=True)
-    # pdf.drop('unix_ts', axis=1, inplace=True)
-
-    # columns = ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)', 'Id'] #list(pdf.columns)
-
-    # pdf_norm=pdf.to_numpy()
-    scaler = StandardScaler()
-    scaler.fit(pdf)    
-    pdf_norm = scaler.transform(pdf)
-    columns = ["sl_norm", "sw_norm", "pl_norm", "pw_norm"]
-    pdf_norm = pd.DataFrame(data=pdf_norm, columns=columns)
-    # pdf_norm['sl_norm'] = pdf_norm['sl_norm'] * 2
-    # pdf_norm['sw_norm'] = pdf_norm['sw_norm'] * 2
-    # pdf_norm['pl_norm'] = pdf_norm['pl_norm'] * 2
-    # pdf_norm['pw_norm'] = pdf_norm['pw_norm'] * 2
-    pdf_norm["Id"] = id
-    pdf_norm["date"] = date
-    # pdf_norm['timestamp'] = timestamp
-    # pdf_norm['unix_ts'] = unix_ts
-    pdf_norm["hour"] = hour
-
-    return spark.createDataFrame(pdf_norm)
-
-# COMMAND ----------
-
+# Loading of the raw data (for which we want to generate features)
 raw_data_batch = spark.table("default.raw_data_table")
 display(raw_data_batch)
 
 # COMMAND ----------
 
 # Creation of the features
-features_df = scaled_features_fn(raw_data_batch)
+features_df = module.scaled_features_fn(spark, raw_data_batch)
 display(features_df)
 
 # COMMAND ----------
