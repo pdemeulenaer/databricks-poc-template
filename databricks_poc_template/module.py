@@ -19,15 +19,14 @@ from delta.tables import DeltaTable
 def iris_data_generator(target_class='all',n_samples=10):
     '''
     This function is meant to generate random samples from a PDF fitted on Iris dataset using Bayesian GMM
-    Input:
-      - target_class: the desired target class to be generated. Options:
+    
+    :param target_class: (int) the desired target class to be generated. Options:
         - '0': for class 0
         - '1': for class 1
         - '2': for class 2
         - 'all': for a random mix of all classes (not available yet)
-      - n_samples: the desired number of samples generated
-    Output:
-      - final_data_generated: the dataframe containing the generated samples (including the target label)
+    :param n_samples: (int) the desired number of samples generated
+    :return final_data_generated: (pandas dataframe) the dataframe containing the generated samples (including the target label)
     '''
 
     # Loading the iris dataset
@@ -103,14 +102,12 @@ def iris_data_generator(target_class='all',n_samples=10):
     return final_data_generated
 
 
-def scaled_features_fn(df):
+def scaled_features_fn(spark, df):
     """
     Computes the scaled_features feature group.
-    Input:
-      - df: the raw input spark dataframe
-      - n_samples: the desired number of samples generated
-    Output:
-      - the spark dataframe containing the features
+    
+    :param df: (spark dataframe) the raw input spark dataframe
+    :return: (spark dataframe) the spark dataframe containing the features
     """
 
     pdf = df.toPandas()
@@ -166,7 +163,7 @@ def scaled_features_fn(df):
 #     return environment
 
 
-def get_latest_model_version(model_name,registry_uri):
+def get_latest_model_version(model_name, registry_uri):
     '''
     This function identifies the latest version of a model registered in the Model Registry
     :param model_name: (str) model name saved in Model Registry
@@ -204,7 +201,7 @@ def get_latest_model_version(model_name,registry_uri):
     return latest_model  
 
 
-def get_delta_version(spark,delta_path):
+def get_delta_version(spark, delta_path):
     """
     Function to get the most recent version of a Delta table give the path to the Delta table
     
@@ -223,7 +220,7 @@ def get_delta_version(spark,delta_path):
     return delta_version
 
 
-def get_table_version(spark,table):
+def get_table_version(spark, table):
     """
     Function to get the most recent version of a Delta table (present in Hive metastore) given the path to the Delta table
     
