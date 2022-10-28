@@ -16,90 +16,134 @@ from delta.tables import DeltaTable
 
     
 def iris_data_generator(target_class='all',n_samples=10):
-  '''
-  This function is meant to generate random samples from a PDF fitted on Iris dataset using Bayesian GMM
-  Input:
-    - target_class: the desired target class to be generated. Options:
-      - '0': for class 0
-      - '1': for class 1
-      - '2': for class 2
-      - 'all': for a random mix of all classes (not available yet)
-    - n_samples: the desired number of samples generated
-  Output:
-    - final_data_generated: the dataframe containing the generated samples (including the target label)
-  '''
+    '''
+    This function is meant to generate random samples from a PDF fitted on Iris dataset using Bayesian GMM
+    Input:
+      - target_class: the desired target class to be generated. Options:
+        - '0': for class 0
+        - '1': for class 1
+        - '2': for class 2
+        - 'all': for a random mix of all classes (not available yet)
+      - n_samples: the desired number of samples generated
+    Output:
+      - final_data_generated: the dataframe containing the generated samples (including the target label)
+    '''
 
-  # Loading the iris dataset
-  iris = datasets.load_iris()
-  iris_df = pd.DataFrame(iris.data,columns = iris.feature_names)
-  iris_df['target'] = iris.target
+    # Loading the iris dataset
+    iris = datasets.load_iris()
+    iris_df = pd.DataFrame(iris.data,columns = iris.feature_names)
+    iris_df['target'] = iris.target
 
-  # Initialize the output dataframe
-  final_data_generated = pd.DataFrame(columns = iris.feature_names)
+    # Initialize the output dataframe
+    final_data_generated = pd.DataFrame(columns = iris.feature_names)
 
-  # Selecting the desired target class
-  if target_class=='0': weights_target_class=[1,0,0]
-  elif target_class=='1': weights_target_class=[0,1,0]
-  elif target_class=='2': weights_target_class=[0,0,1]
-  else: weights_target_class=[1./3.,1./3.,1./3.]
-  
-  # Now we need to generate samples for each of the 3 classes
-  samples_per_class = random.choices([0,1,2], weights=weights_target_class, k=n_samples)
+    # Selecting the desired target class
+    if target_class=='0': weights_target_class=[1,0,0]
+    elif target_class=='1': weights_target_class=[0,1,0]
+    elif target_class=='2': weights_target_class=[0,0,1]
+    else: weights_target_class=[1./3.,1./3.,1./3.]
+    
+    # Now we need to generate samples for each of the 3 classes
+    samples_per_class = random.choices([0,1,2], weights=weights_target_class, k=n_samples)
 
-  # Target class id and counts per target class:
-  class_id, counts_per_class = np.unique(samples_per_class, return_counts=True)
+    # Target class id and counts per target class:
+    class_id, counts_per_class = np.unique(samples_per_class, return_counts=True)
 
-  # Looping on the 3 target classes
-  for j,one_class_id in enumerate(class_id):
+    # Looping on the 3 target classes
+    for j,one_class_id in enumerate(class_id):
 
-    # Extract the data of a given target class
-    subset_df = iris_df[iris_df['target']==one_class_id]
-    subset_df.drop('target', axis=1, inplace=True)
+        # Extract the data of a given target class
+        subset_df = iris_df[iris_df['target']==one_class_id]
+        subset_df.drop('target', axis=1, inplace=True)
 
-    # Fit the Bayesian GMM on the data
-    n_components = 10 # Number of Gaussian components in the GMM model
-    gmm = BayesianGaussianMixture(n_components=n_components,
-                                  covariance_type='full', 
-                                  # tol=0.00001, 
-                                  # reg_covar=1e-06, 
-                                  max_iter=20, 
-                                  random_state=0, 
-                                  n_init=10,
-                                  # weight_concentration_prior=0.1
-                                  )
-
-    gmm.fit(subset_df.to_numpy()) 
-
-    means = gmm.means_
-    cov = gmm.covariances_
-    weights = gmm.weights_
-
-    # Compute the number of samples for each component of the GMM PDF
-    # Indeed the GMM pdf is made of multiple Gaussian components.
-    # So we sample each component respecting its own weight
-    # The "counts" list is a list of the number of samples for each component
-    component_samples = random.choices(population=np.arange(n_components),  # list to pick from
-                                      weights=weights,  # weights of the population, in order
-                                      k=counts_per_class[j]  # amount of samples to draw
+        # Fit the Bayesian GMM on the data
+        n_components = 10 # Number of Gaussian components in the GMM model
+        gmm = BayesianGaussianMixture(n_components=n_components,
+                                      covariance_type='full', 
+                                      # tol=0.00001, 
+                                      # reg_covar=1e-06, 
+                                      max_iter=20, 
+                                      random_state=0, 
+                                      n_init=10,
+                                      # weight_concentration_prior=0.1
                                       )
-    # print(component_samples)
 
-    component_id, counts_per_component = np.unique(component_samples, return_counts=True)
-    # print(component_id, counts_per_component)
+        gmm.fit(subset_df.to_numpy()) 
 
-    # Generate the samples for each GMM components following the counts
-    data_gen = np.random.multivariate_normal(means[component_id[0],:],cov[component_id[0]],counts_per_component[0]) 
-    for i in range(1,len(component_id)):
-      data_new = np.random.multivariate_normal(means[component_id[i],:],cov[component_id[i]],counts_per_component[i]) 
-      data_gen = np.vstack((data_gen,data_new)) 
-      del data_new 
+        means = gmm.means_
+        cov = gmm.covariances_
+        weights = gmm.weights_
 
-    data_generated_per_class = pd.DataFrame(data_gen,columns = iris.feature_names)
-    data_generated_per_class['target'] = one_class_id
+        # Compute the number of samples for each component of the GMM PDF
+        # Indeed the GMM pdf is made of multiple Gaussian components.
+        # So we sample each component respecting its own weight
+        # The "counts" list is a list of the number of samples for each component
+        component_samples = random.choices(population=np.arange(n_components),  # list to pick from
+                                          weights=weights,  # weights of the population, in order
+                                          k=counts_per_class[j]  # amount of samples to draw
+                                          )
+        # print(component_samples)
 
-    final_data_generated = pd.concat([final_data_generated, data_generated_per_class], axis=0, ignore_index=True)
+        component_id, counts_per_component = np.unique(component_samples, return_counts=True)
+        # print(component_id, counts_per_component)
 
-  return final_data_generated
+        # Generate the samples for each GMM components following the counts
+        data_gen = np.random.multivariate_normal(means[component_id[0],:],cov[component_id[0]],counts_per_component[0]) 
+        for i in range(1,len(component_id)):
+            data_new = np.random.multivariate_normal(means[component_id[i],:],cov[component_id[i]],counts_per_component[i]) 
+            data_gen = np.vstack((data_gen,data_new)) 
+            del data_new 
+
+        data_generated_per_class = pd.DataFrame(data_gen,columns = iris.feature_names)
+        data_generated_per_class['target'] = one_class_id
+
+        final_data_generated = pd.concat([final_data_generated, data_generated_per_class], axis=0, ignore_index=True)
+
+    return final_data_generated
+
+
+def scaled_features_fn(df):
+    """
+    Computes the scaled_features feature group.
+    Input:
+      - df: the raw input spark dataframe
+      - n_samples: the desired number of samples generated
+    Output:
+      - the spark dataframe containing the features
+    """
+
+    pdf = df.toPandas()
+    id = pdf["Id"]
+    date = pdf["date"]
+    hour = pdf["hour"]
+    # timestamp = pdf['timestamp']
+    # unix_ts = pdf['unix_ts']
+    # target = pdf['target']
+    pdf.drop("Id", axis=1, inplace=True)
+    pdf.drop("date", axis=1, inplace=True)
+    pdf.drop("hour", axis=1, inplace=True)
+    # pdf.drop('timestamp', axis=1, inplace=True)
+    # pdf.drop('unix_ts', axis=1, inplace=True)
+
+    # columns = ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)', 'Id'] #list(pdf.columns)
+
+    # pdf_norm=pdf.to_numpy()
+    scaler = StandardScaler()
+    scaler.fit(pdf)    
+    pdf_norm = scaler.transform(pdf)
+    columns = ["sl_norm", "sw_norm", "pl_norm", "pw_norm"]
+    pdf_norm = pd.DataFrame(data=pdf_norm, columns=columns)
+    # pdf_norm['sl_norm'] = pdf_norm['sl_norm'] * 2
+    # pdf_norm['sw_norm'] = pdf_norm['sw_norm'] * 2
+    # pdf_norm['pl_norm'] = pdf_norm['pl_norm'] * 2
+    # pdf_norm['pw_norm'] = pdf_norm['pw_norm'] * 2
+    pdf_norm["Id"] = id
+    pdf_norm["date"] = date
+    # pdf_norm['timestamp'] = timestamp
+    # pdf_norm['unix_ts'] = unix_ts
+    pdf_norm["hour"] = hour
+
+    return spark.createDataFrame(pdf_norm)
 
 
 # def detect_workspace(spark):
