@@ -33,17 +33,25 @@ etl_workflow:
 	dbx deploy etl-workflow
 	dbx launch etl-workflow --trace	
 
-train_workflow:
-	dbx deploy train-workflow
-	dbx launch train-workflow --trace		
+train_workflow_dev:
+	dbx deploy train-workflow-dev
+	dbx launch train-workflow-dev --trace	
+
+train_workflow_staging:
+	dbx deploy train-workflow-staging
+	dbx launch train-workflow-staging --trace			
 
 inference_dev: # TODO:
 	dbx deploy inference-workflow-dev
 	dbx launch inference-workflow-dev --trace	
 
-inference_staging: # TODO:
-	dbx deploy inference-workflow-staging
-	dbx launch inference-workflow-staging --trace		
+inference_uat: # TODO:
+	dbx deploy inference-workflow-uat
+	dbx launch inference-workflow-uat --trace	
+
+inference_prod: # TODO:
+	dbx deploy inference-workflow-prod
+	dbx launch inference-workflow-prod --trace			
 
 message:
 	echo hello $(foo)

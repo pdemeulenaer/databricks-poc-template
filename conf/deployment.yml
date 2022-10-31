@@ -75,14 +75,14 @@ environments:
             spark_python_task:
               python_file: "file://cicd_databricks_github/tasks/task_training.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_training_dev.yml" ]
-          - task_key: "step-validation-task"
-            depends_on:
-              - task_key: "step-training-task"
-            job_cluster_key: "default"
-            max_retries: 0            
-            spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/task_validation.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_validation_dev.yml" ]
+          # - task_key: "step-validation-task"
+          #   depends_on:
+          #     - task_key: "step-training-task"
+          #   job_cluster_key: "default"
+          #   max_retries: 0            
+          #   spark_python_task:
+          #     python_file: "file://cicd_databricks_github/tasks/task_validation.py"
+          #     parameters: [ "--conf-file", "file:fuse://conf/tasks/task_validation_dev.yml" ]
 
       # STAGING
       - name: "train-workflow-staging"
@@ -129,7 +129,7 @@ environments:
               python_file: "file://cicd_databricks_github/tasks/step_inference.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]         
 
-      - name: "inference-workflow-staging"
+      - name: "inference-workflow-uat"
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
