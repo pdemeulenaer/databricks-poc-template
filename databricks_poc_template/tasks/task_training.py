@@ -115,9 +115,6 @@ class TrainTask(Task):
         # Initialize the Feature Store client
         fs = feature_store.FeatureStoreClient()
 
-        # Declaration of the Feature Store
-        fs_table = f"{fs_schema}.{fs_table}"
-
         # Declaration of the features, in a "feature lookup" object
         feature_lookups = [
             FeatureLookup( 
@@ -127,18 +124,18 @@ class TrainTask(Task):
             ),
         ]
 
-        # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
-        exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
-        training_set = fs.create_training_set(
-          raw_data_with_labels,
-          feature_lookups = feature_lookups,
-          label = "target",
-          exclude_columns = exclude_columns
-        )
+        # # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
+        # exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
+        # training_set = fs.create_training_set(
+        #   raw_data_with_labels,
+        #   feature_lookups = feature_lookups,
+        #   label = "target",
+        #   exclude_columns = exclude_columns
+        # )
 
-        # Load the training dataset into a dataframe
-        training_df = training_set.load_df()
-        display(training_df)
+        # # Load the training dataset into a dataframe
+        # training_df = training_set.load_df()
+        # display(training_df)
 
 # #         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
 # #         train_pd = train_df.toPandas()
