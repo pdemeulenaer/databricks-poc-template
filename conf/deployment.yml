@@ -73,7 +73,7 @@ environments:
             job_cluster_key: "default"
             max_retries: 0
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/task_training.py"
+              python_file: "file://databricks_poc_template/tasks/task_training.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_training_dev.yml" ]
           # - task_key: "step-validation-task"
           #   depends_on:
@@ -81,7 +81,7 @@ environments:
           #   job_cluster_key: "default"
           #   max_retries: 0            
           #   spark_python_task:
-          #     python_file: "file://cicd_databricks_github/tasks/task_validation.py"
+          #     python_file: "file://databricks_poc_template/tasks/task_validation.py"
           #     parameters: [ "--conf-file", "file:fuse://conf/tasks/task_validation_dev.yml" ]
 
       # STAGING
@@ -99,7 +99,7 @@ environments:
             job_cluster_key: "default"
             max_retries: 0
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/task_training.py"
+              python_file: "file://databricks_poc_template/tasks/task_training.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_training_staging.yml" ]
           - task_key: "step-validation-task"
             depends_on:
@@ -107,7 +107,7 @@ environments:
             job_cluster_key: "default"
             max_retries: 0            
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/task_validation.py"
+              python_file: "file://databricks_poc_template/tasks/task_validation.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_validation_staging.yml" ]              
 
       #############################################################
@@ -126,7 +126,7 @@ environments:
                 package: evidently
             max_retries: 0
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              python_file: "file://databricks_poc_template/tasks/step_inference.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]         
 
       - name: "inference-workflow-uat"
@@ -142,7 +142,7 @@ environments:
                 package: evidently
             max_retries: 0
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              python_file: "file://databricks_poc_template/tasks/step_inference.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]            
 
       - name: "inference-workflow-prod"
@@ -154,7 +154,7 @@ environments:
             description: step transition to prod task
             job_cluster_key: "default"
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/step_transition_to_prod.py"
+              python_file: "file://databricks_poc_template/tasks/step_transition_to_prod.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]              
 
           - task_key: "step-infer-task"
@@ -167,5 +167,5 @@ environments:
                 package: evidently
             max_retries: 0
             spark_python_task:
-              python_file: "file://cicd_databricks_github/tasks/step_inference.py"
+              python_file: "file://databricks_poc_template/tasks/step_inference.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]                               
