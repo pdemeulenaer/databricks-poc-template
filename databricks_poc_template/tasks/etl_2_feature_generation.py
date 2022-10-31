@@ -28,14 +28,14 @@ class ETL2FeatureGenerationTask(Task):
         raw_data_batch.show(5)
 
         # ========================================
-        # 1. Feature generation for the data batch
+        # 2. Feature generation for the data batch
         # ========================================        
 
         features_df = module.scaled_features_fn(spark, raw_data_batch)
         features_df.show()
 
         # ===========================================
-        # 2. Load the features into the Feature Store
+        # 3. Load the features into the Feature Store
         # ===========================================  
 
         self.logger.info(f"Writing data batch to feature table {fs_schema}.{fs_table}")
