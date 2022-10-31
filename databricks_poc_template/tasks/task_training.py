@@ -167,96 +167,84 @@ class TrainTask(Task):
         # ========================================
         # 1.3 Model training
         # ========================================
-        # try:
-        
-        with mlflow.start_run() as run:    
-            mlflow.sklearn.autolog()                      
+        try:            
+            with mlflow.start_run() as run:    
+                mlflow.sklearn.autolog()                      
 
-            print("Active run_id: {}".format(run.info.run_id))
-            self.logger.info("Active run_id: {}".format(run.info.run_id))
+                print("Active run_id: {}".format(run.info.run_id))
+                self.logger.info("Active run_id: {}".format(run.info.run_id))
 
-            # Model definition
-            base_estimator = RandomForestClassifier(oob_score = True,
-                                                    random_state=21,
-                                                    n_jobs=-1)   
+                # Model definition
+                base_estimator = RandomForestClassifier(oob_score = True,
+                                                        random_state=21,
+                                                        n_jobs=-1)   
 
-            CV_rfc = GridSearchCV(estimator=base_estimator, 
-                                  param_grid=model_conf['hyperparameters_grid'],
-                                  cv=5)
+                CV_rfc = GridSearchCV(estimator=base_estimator, 
+                                    param_grid=model_conf['hyperparameters_grid'],
+                                    cv=5)
 
-            # Remove unneeded data
-            x_train = train.drop(["target",'Id', 'hour','date'], axis=1)
-            x_test = test.drop(["target",'Id', 'hour','date'], axis=1)
-            y_train = train.target
-            y_test = test.target
+                # Remove unneeded data
+                x_train = train.drop(["target",'Id', 'hour','date'], axis=1)
+                x_test = test.drop(["target",'Id', 'hour','date'], axis=1)
+                y_train = train.target
+                y_test = test.target
 
-            # Cross validation model fit
-            CV_rfc.fit(x_train, y_train)
-            print(CV_rfc.best_params_)
-            print(CV_rfc.best_score_)
-            print(CV_rfc.best_estimator_)
-            model = CV_rfc.best_estimator_
+                # Cross validation model fit
+                CV_rfc.fit(x_train, y_train)
+                print(CV_rfc.best_params_)
+                print(CV_rfc.best_score_)
+                print(CV_rfc.best_estimator_)
+                model = CV_rfc.best_estimator_
 
-            # Tracking the model parameters
-            train_dataset_version = module.get_table_version(spark,f"{db_out}.{train_dataset}")
-            test_dataset_version = module.get_table_version(spark,f"{db_out}.{test_dataset}")
-            fs_table_version = module.get_table_version(spark,f"{fs_schema}.{fs_table}")
-            mlflow.set_tag("train_dataset_version", train_dataset_version)
-            mlflow.set_tag("test_dataset_version", test_dataset_version)
-            mlflow.set_tag("fs_table_version", fs_table_version)
-            mlflow.set_tag("train_dataset", f"{db_out}.{train_dataset}")
-            mlflow.set_tag("test_dataset", f"{db_out}.{test_dataset}")
-            mlflow.set_tag("raw_data", f"{db_in}.{raw_data_table}")
-            mlflow.set_tag("raw_labels", f"{db_in}.{label_table}")
-            mlflow.set_tag("environment run", f"{env}") # Tag the environment where the run is done
-            signature = infer_signature(x_train, model.predict(x_train))  
+                # Tracking the model parameters
+                train_dataset_version = module.get_table_version(spark,f"{db_out}.{train_dataset}")
+                test_dataset_version = module.get_table_version(spark,f"{db_out}.{test_dataset}")
+                fs_table_version = module.get_table_version(spark,f"{fs_schema}.{fs_table}")
+                mlflow.set_tag("train_dataset_version", train_dataset_version)
+                mlflow.set_tag("test_dataset_version", test_dataset_version)
+                mlflow.set_tag("fs_table_version", fs_table_version)
+                mlflow.set_tag("train_dataset", f"{db_out}.{train_dataset}")
+                mlflow.set_tag("test_dataset", f"{db_out}.{test_dataset}")
+                mlflow.set_tag("raw_data", f"{db_in}.{raw_data_table}")
+                mlflow.set_tag("raw_labels", f"{db_in}.{label_table}")
+                mlflow.set_tag("environment run", f"{env}") # Tag the environment where the run is done
+                signature = infer_signature(x_train, model.predict(x_train))  
 
-            # Add an random input example for the model
-            input_example = {
-                "sepal_length": 5.1,
-                "sepal_width": 3.5,
-                "petal_length": 1.4,
-                "petal_width": 0.2
-            }                               
-            
+                # Add an random input example for the model
+                input_example = {
+                    "sepal_length": 5.1,
+                    "sepal_width": 3.5,
+                    "petal_length": 1.4,
+                    "petal_width": 0.2
+                }                               
+                
+                # Log the model
+                # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
 
-         
+                # Register the model to MLflow MR as well as FS MR (should not register in DEV?)
+                fs.log_model(
+                    model,
+                    artifact_path=model_name,
+                    flavor=mlflow.sklearn,
+                    training_set=training_set,
+                    # registered_model_name=model_name,
+                )
+                
+                # Register the model to the Model Registry
+                print(mlflow.get_registry_uri())
+                mlflow.sklearn.log_model(model, 
+                                        model_name,
+                                        registered_model_name=model_name,
+                                        signature=signature,
+                                        input_example=input_example)           
 
-#             # Log the model (not registering in DEV !!!)
-#             # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
-            
-#             input_example = {
-#                 "sepal_length": 5.1,
-#                 "sepal_width": 3.5,
-#                 "petal_length": 1.4,
-#                 "petal_width": 0.2
-#             }
-            
-#             # Register the model to MLflow MR as well as FS MR (should not register in DEV !!!!!!)
-#             fs.log_model(
-#                 model,
-#                 artifact_path=model_name,
-#                 flavor=mlflow.sklearn,
-#                 training_set=training_set,
-#                 # registered_model_name=model_name,
-#             )
-            
-#             # Register the model to the CENTRALIZED MLflow MR (ONLY IN STAGING)
-#             mlflow.set_registry_uri(registry_uri)
-#             print(mlflow.get_registry_uri())
-#             mlflow.sklearn.log_model(model, 
-#                                     model_name,
-#                                     registered_model_name=model_name,
-#                                     signature=signature,
-#                                     input_example=input_example)           
+                self.logger.info("Step 3 completed: model training and saved to MLFlow")                
 
-#             self.logger.info("Step 1.3 completed: model training and saved to MLFlow")                
-
-#         # except Exception as e:
-#         #     print("Errored on step 1.3: model training")
-#         #     print("Exception Trace: {0}".format(e))
-#         #     print(traceback.format_exc())
-#         #     raise e   
+        except Exception as e:
+            print("Errored on step 3: model training")
+            print("Exception Trace: {0}".format(e))
+            print(traceback.format_exc())
+            raise e   
 
 
 
