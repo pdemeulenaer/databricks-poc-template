@@ -48,7 +48,7 @@ class TrainTask(Task):
         input_conf = self.conf["data"]["input"]
         self.logger.info("input configs: {0}".format(input_conf))
 
-        db = input_conf["database"]  
+        db_in = input_conf["database"]  
         raw_data_table = input_conf["raw_data_table"]  
         label_table = input_conf["label_table"] 
         fs_schema = input_conf["fs_schema"] 
@@ -56,12 +56,11 @@ class TrainTask(Task):
 
         # Output
         output_conf = self.conf["data"]["output"]
-        self.logger.info("output configs: {0}".format(output_conf))        
+        self.logger.info("output configs: {0}".format(output_conf))       
 
-        # data_path = self.conf["data"]["data_path"]
-        # train_val_dataset = self.conf["data"]["train_val_dataset"]
-        # train_dataset = self.conf["data"]["train_dataset"]        
-        # output_path = self.conf["data"]["output_path"]        
+        db_out = output_conf["database"]   
+        train_dataset = output_conf["train_dataset"] 
+        test_dataset = output_conf["test_dataset"]         
 
         # Model configs
         model_conf = self.conf["model"]
@@ -82,8 +81,8 @@ class TrainTask(Task):
 
         try:        
             # Load the raw data and associated label tables
-            raw_data = spark.table(f"{db}.{raw_data_table}")
-            labels = spark.table(f"{db}.{label_table}")
+            raw_data = spark.table(f"{db_in}.{raw_data_table}")
+            labels = spark.table(f"{db_in}.{label_table}")
             
             # Joining raw_data and labels
             raw_data_with_labels = raw_data.join(labels, ['Id','date','hour'])
@@ -110,110 +109,63 @@ class TrainTask(Task):
         # ==================================
         # 2. Building the training dataset
         # ==================================
-        # try:
+        try:        
+            # Initialize the Feature Store client
+            fs = feature_store.FeatureStoreClient()
+
+            # Declaration of the features, in a "feature lookup" object
+            feature_lookups = [
+                FeatureLookup( 
+                table_name = f"{fs_schema}.{fs_table}",
+                feature_names = ["sl_norm","sw_norm","pl_norm","pw_norm"], # TODO: automate this in config file
+                lookup_key = ["Id","hour"], # TODO: automate this in config file
+                ),
+            ]
+
+            # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
+            exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
+            training_set = fs.create_training_set(
+                df = raw_data_with_labels,
+                feature_lookups = feature_lookups,
+                label = "target",
+                exclude_columns = exclude_columns
+            )
+
+            # Load the training dataset into a dataframe
+            training_df = training_set.load_df()
+            display(training_df)
+            training_df.show(5)
         
-        # Initialize the Feature Store client
-        fs = feature_store.FeatureStoreClient()
+            # Collect data into a Pandas array for training
+            features_and_label = training_df.columns
+            data_pd = training_df.toPandas()[features_and_label]
 
-        # Declaration of the features, in a "feature lookup" object
-        feature_lookups = [
-            FeatureLookup( 
-              table_name = f"{fs_schema}.{fs_table}",
-              feature_names = ["sl_norm","sw_norm","pl_norm","pw_norm"], # TODO: automate this in config file
-              lookup_key = ["Id","hour"], # TODO: automate this in config file
-            ),
-        ]
-
-        # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
-        exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
-        training_set = fs.create_training_set(
-          df = raw_data_with_labels,
-          feature_lookups = feature_lookups,
-          label = "target",
-          exclude_columns = exclude_columns
-        )
-
-        # Load the training dataset into a dataframe
-        training_df = training_set.load_df()
-        display(training_df)
-        training_df.show(5)
-
-# #         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-# #         train_pd = train_df.toPandas()
-
-# #         val_df = self.spark.read.format("delta").load(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-# #         val_pd = val_df.toPandas()        
-
-# #         # Feature selection
-# #         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-# #         target = 'label'   
-
-# #         x_train = train_pd[feature_cols].values
-# #         y_train = train_pd[target].values
-
-# #         x_val = val_pd[feature_cols].values
-# #         y_val = val_pd[target].values        
- 
-#         self.logger.info("Step 1.1 completed: Loaded features from the Feature Store")   
+            # Do the train-test split
+            train, test = train_test_split(data_pd, train_size=0.7, random_state=123)
+            x_train = train.drop(["target"], axis=1)
+            x_test = test.drop(["target"], axis=1)
+            y_train = train.target
+            y_test = test.target
+            
+            # Save train dataset
+            train_pd = pd.DataFrame(data=np.column_stack((x_train,y_train)), columns=features_and_label)
+            train_df = spark.createDataFrame(train_pd)
+            train_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{train_dataset}")
+            train_df2 = spark.createDataFrame(train)
+            train_df2.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.train_dataset2")            
+            
+            # Save test dataset
+            test_pd = pd.DataFrame(data=np.column_stack((x_test,y_test)), columns=features_and_label)
+            test_df = spark.createDataFrame(test_pd)
+            test_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{test_dataset}") 
+    
+            self.logger.info("Step 2. completed: Building the training dataset")   
           
-#         # except Exception as e:
-#         #     print("Errored on 1.1: loading features from the feature store")
-#         #     print("Exception Trace: {0}".format(e))
-#         #     # print(traceback.format_exc())
-#         #     raise e    
-
-#         # ADD A TASK AROUND BUILDING AND SAVING TRAIN-TEST (SPLIT)
-#         # ==================================
-#         # 1.2 Create Train-Test data
-#         # ==================================
-#         # try:
-        
-#         training_df = training_set.load_df()
-#         display(training_df)
-        
-#         # Collect data into a Pandas array for training
-#         features_and_label = training_df.columns
-#         data_pd = training_df.toPandas()[features_and_label]
-
-#         train, test = train_test_split(data_pd, train_size=0.7, random_state=123)   # BUG: stratify=y not working now
-#         x_train = train.drop(["target"], axis=1)
-#         x_test = test.drop(["target"], axis=1)
-#         y_train = train.target
-#         y_test = test.target
-        
-#         # Save train dataset
-#         train_pd = pd.DataFrame(data=np.column_stack((x_train,y_train)), columns=features_and_label)
-#         train_df = spark.createDataFrame(train_pd)
-#         train_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"train_iris_dataset")
-        
-#         # Save test dataset
-#         test_pd = pd.DataFrame(data=np.column_stack((x_test,y_test)), columns=features_and_label)
-#         test_df = spark.createDataFrame(test_pd)
-#         test_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"test_iris_dataset")
-
-# #         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-# #         train_pd = train_df.toPandas()
-
-# #         val_df = self.spark.read.format("delta").load(data_path+val_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
-# #         val_pd = val_df.toPandas()        
-
-# #         # Feature selection
-# #         feature_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
-# #         target = 'label'   
-
-# #         x_train = train_pd[feature_cols].values
-# #         y_train = train_pd[target].values
-
-# #         x_val = val_pd[feature_cols].values
-# #         y_val = val_pd[target].values        
- 
-#         self.logger.info("Step 1.2 completed: Create and save the train and test data")   
-          
-#         # except Exception as e:
-#         #     print("Errored on 1.2: create and save the train and test data")
-#         #     print("Exception Trace: {0}".format(e))
-#         #     # print(traceback.format_exc())
-#         #     raise e  
+        except Exception as e:
+            print("Errored on 2.: Building the training dataset")
+            print("Exception Trace: {0}".format(e))
+            # print(traceback.format_exc())
+            raise e  
 
 
 
