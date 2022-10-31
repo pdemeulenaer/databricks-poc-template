@@ -136,6 +136,7 @@ class TrainTask(Task):
         # Load the training dataset into a dataframe
         training_df = training_set.load_df()
         display(training_df)
+        training_df.show(5)
 
 # #         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
 # #         train_pd = train_df.toPandas()
