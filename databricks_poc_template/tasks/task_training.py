@@ -86,7 +86,7 @@ class TrainTask(Task):
             labels = spark.table(f"{db}.{label_table}")
             
             # Joining raw_data and labels
-            raw_data_with_labels = raw_data.join(labels, ['Id','hour'])
+            raw_data_with_labels = raw_data.join(labels, ['Id','date','hour'])
             display(raw_data_with_labels)
             
             # Selection of the data and labels until last LARGE time step (e.g. day or week let's say)
@@ -107,38 +107,38 @@ class TrainTask(Task):
             # print(traceback.format_exc())
             raise e  
 
-        # # ==================================
-        # # 2. Building the training dataset
-        # # ==================================
-        # # try:
+        # ==================================
+        # 2. Building the training dataset
+        # ==================================
+        # try:
         
-        # # Initialize the Feature Store client
-        # fs = feature_store.FeatureStoreClient()
+        # Initialize the Feature Store client
+        fs = feature_store.FeatureStoreClient()
 
-        # # Declaration of the Feature Store
-        # fs_table = f"{fs_schema}.{fs_table}"
+        # Declaration of the Feature Store
+        fs_table = f"{fs_schema}.{fs_table}"
 
-        # # Declaration of the features, in a "feature lookup" object
-        # scaled_feature_lookups = [
-        #     FeatureLookup( 
-        #       table_name = f"{fs_schema}.{fs_table}",
-        #       feature_names = ["sl_norm","sw_norm","pl_norm","pw_norm"],
-        #       lookup_key = ["Id","hour"],
-        #     ),
-        # ]
+        # Declaration of the features, in a "feature lookup" object
+        feature_lookups = [
+            FeatureLookup( 
+              table_name = f"{fs_schema}.{fs_table}",
+              feature_names = ["sl_norm","sw_norm","pl_norm","pw_norm"], # TODO: automate this in config file
+              lookup_key = ["Id","hour"], # TODO: automate this in config file
+            ),
+        ]
 
-        # # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
-        # exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
-        # training_set = fs.create_training_set(
-        #   raw_data_with_labels,
-        #   feature_lookups = scaled_feature_lookups,
-        #   label = "target",
-        #   exclude_columns = exclude_columns
-        # )
+        # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
+        exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
+        training_set = fs.create_training_set(
+          raw_data_with_labels,
+          feature_lookups = feature_lookups,
+          label = "target",
+          exclude_columns = exclude_columns
+        )
 
-#         # Load the training dataset into a dataframe which can be passed into model training algo
-#         training_df = training_set.load_df()
-#         display(training_df)
+        # Load the training dataset into a dataframe
+        training_df = training_set.load_df()
+        display(training_df)
 
 # #         train_df = self.spark.read.format("delta").load(data_path+train_dataset) #"dbfs:/dbx/tmp/test/{0}".format('train_data_sklearn_rf'))
 # #         train_pd = train_df.toPandas()
