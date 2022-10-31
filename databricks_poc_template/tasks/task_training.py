@@ -164,99 +164,63 @@ class TrainTask(Task):
             # print(traceback.format_exc())
             raise e  
 
-
-            # x_train = train.drop(["target"], axis=1)
-            # x_test = test.drop(["target"], axis=1)
-            # y_train = train.target
-            # y_test = test.target
-
-
-#         # ========================================
-#         # 1.3 Model training
-#         # ========================================
-#         # try:
+        # ========================================
+        # 1.3 Model training
+        # ========================================
+        # try:
         
-#         with mlflow.start_run() as run:    
-#             mlflow.sklearn.autolog()
-#             print("Active run_id: {}".format(run.info.run_id))
-#             self.logger.info("Active run_id: {}".format(run.info.run_id))
+        with mlflow.start_run() as run:    
+            mlflow.sklearn.autolog()                      
 
-#             # Model definition
-# #             max_depth = int(model_conf['hyperparameters']['max_depth'])
-# #             n_estimators = int(model_conf['hyperparameters']['n_estimators'])
-# #             max_features = model_conf['hyperparameters']['max_features']
-# #             criterion = model_conf['hyperparameters']['criterion']
-# #             class_weight = model_conf['hyperparameters']['class_weight']
-# #             bootstrap = bool(model_conf['hyperparameters']['bootstrap'])
-# #             clf = RandomForestClassifier(max_depth=max_depth,
-# #                                     n_estimators=n_estimators,
-# #                                     max_features=max_features,
-# #                                     criterion=criterion,
-# #                                     class_weight=class_weight,
-# #                                     bootstrap=bootstrap,
-# #                                     random_state=21,
-# #                                     n_jobs=-1)          
+            print("Active run_id: {}".format(run.info.run_id))
+            self.logger.info("Active run_id: {}".format(run.info.run_id))
+
+            # Model definition
+            base_estimator = RandomForestClassifier(oob_score = True,
+                                                    random_state=21,
+                                                    n_jobs=-1)   
+
+            CV_rfc = GridSearchCV(estimator=base_estimator, 
+                                  param_grid=model_conf['hyperparameters_grid'],
+                                  cv=5)
+
+            # Remove unneeded data
+            x_train = train.drop(["target",'Id', 'hour','date'], axis=1)
+            x_test = test.drop(["target",'Id', 'hour','date'], axis=1)
+            y_train = train.target
+            y_test = test.target
+
+            # Cross validation model fit
+            CV_rfc.fit(x_train, y_train)
+            print(CV_rfc.best_params_)
+            print(CV_rfc.best_score_)
+            print(CV_rfc.best_estimator_)
+            model = CV_rfc.best_estimator_
+
+            # Tracking the model parameters
+            train_dataset_version = module.get_table_version(spark,f"{db_out}.{train_dataset}")
+            test_dataset_version = module.get_table_version(spark,f"{db_out}.{test_dataset}")
+            fs_table_version = module.get_table_version(spark,f"{fs_schema}.{fs_table}")
+            mlflow.set_tag("train_dataset_version", train_dataset_version)
+            mlflow.set_tag("test_dataset_version", test_dataset_version)
+            mlflow.set_tag("fs_table_version", fs_table_version)
+            mlflow.set_tag("train_dataset", f"{db_out}.{train_dataset}")
+            mlflow.set_tag("test_dataset", f"{db_out}.{test_dataset}")
+            mlflow.set_tag("raw_data", f"{db_in}.{raw_data_table}")
+            mlflow.set_tag("raw_labels", f"{db_in}.{label_table}")
+            mlflow.set_tag("environment run", f"{env}") # Tag the environment where the run is done
+            signature = infer_signature(x_train, model.predict(x_train))  
+
+            # Add an random input example for the model
+            input_example = {
+                "sepal_length": 5.1,
+                "sepal_width": 3.5,
+                "petal_length": 1.4,
+                "petal_width": 0.2
+            }                               
             
-# #             # Fit of the model on the training set
-# #             model = clf.fit(x_train, y_train) 
 
-#             base_estimator = RandomForestClassifier(oob_score = True,
-#                                                     random_state=21,
-#                                                     n_jobs=-1)   
-
-#             CV_rfc = GridSearchCV(estimator=base_estimator, 
-#                                   param_grid=model_conf['hyperparameters_grid'],
-#                                   cv=5)
-
-#             CV_rfc.fit(x_train, y_train)
-#             print(CV_rfc.best_params_)
-#             print(CV_rfc.best_score_)
-#             print(CV_rfc.best_estimator_)
-#             model = CV_rfc.best_estimator_
-
-#             signature = infer_signature(x_train, model.predict(x_train))
-            
-#             # # Inference on validation dataset
-#             # y_val_pred = model.predict(x_val)    
-
-#             # # Accuracy and Confusion Matrix
-#             # accuracy = accuracy_score(y_val, y_val_pred)
-#             # print('Accuracy = ',accuracy)
-#             # print('Confusion matrix:')
-#             # Classes = ['setosa','versicolor','virginica']
-#             # C = confusion_matrix(y_val, y_val_pred)
-#             # C_normalized = C / C.astype(np.float).sum()        
-#             # C_normalized_pd = pd.DataFrame(C_normalized,columns=Classes,index=Classes)
-#             # print(C_normalized_pd)   
-
-#             # # Figure plot
-#             # fig = plt.figure()
-#             # ax = fig.add_subplot(111)
-#             # cax = ax.matshow(C,cmap='Blues')
-#             # plt.title('Confusion matrix of the classifier')
-#             # fig.colorbar(cax)
-#             # ax.set_xticklabels([''] + Classes)
-#             # ax.set_yticklabels([''] + Classes)
-#             # plt.xlabel('Predicted')
-#             # plt.ylabel('True')
-#             # plt.savefig("confusion_matrix.png")
-            
-#             # # Tracking performance metrics
-#             # mlflow.log_metric("accuracy", accuracy)
-#             # mlflow.log_figure(fig, "confusion_matrix.png")
-#             mlflow.set_tag("type", "CI run")  
-
-#             # Tracking the data
-#             train_dataset_version = module.get_delta_version(spark,cwd+"train_iris_dataset")
-#             test_dataset_version = module.get_delta_version(spark,cwd+"test_iris_dataset")
-#             fs_table_version = module.get_table_version(spark,fs_table)
-#             mlflow.set_tag("train_dataset_version", train_dataset_version)
-#             mlflow.set_tag("test_dataset_version", test_dataset_version)
-#             mlflow.set_tag("fs_table_version", fs_table_version)
-#             mlflow.set_tag("train_dataset_path", cwd+"train_iris_dataset")
-#             mlflow.set_tag("test_dataset_path", cwd+"test_iris_dataset")
-#             mlflow.set_tag("raw_data_path", cwd + 'raw_data')
-#             mlflow.set_tag("raw_labels_path", cwd + 'labels')            
+         
 
 #             # Log the model (not registering in DEV !!!)
 #             # mlflow.sklearn.log_model(model, "model") #, registered_model_name="sklearn-rf")   
