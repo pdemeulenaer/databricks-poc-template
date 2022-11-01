@@ -1,4 +1,5 @@
 from databricks_poc_template.common import Task
+from databricks_poc_template import module
 
 import pandas as pd
 import numpy as np
@@ -91,7 +92,7 @@ class ValidationTask(Task):
 
             # Initialize MLflow client
             client = mlflow.tracking.MlflowClient()
-            model_names = [m.name for m in client.list_registered_models()]
+            model_names = [m.name for m in client.search_registered_models()]
             print(model_names)
 
             # Extracting model & its information (latest model with tag 'None')
