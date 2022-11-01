@@ -185,9 +185,9 @@ class TrainTask(Task):
 
                 # Remove unneeded data
                 x_train = train.drop(["target",'Id', 'hour','date'], axis=1)
-                x_test = test.drop(["target",'Id', 'hour','date'], axis=1)
-                y_train = train.target
-                y_test = test.target
+                y_train = train.target                
+                # x_test = test.drop(["target",'Id', 'hour','date'], axis=1)
+                # y_test = test.target
 
                 # Cross validation model fit
                 CV_rfc.fit(x_train, y_train)
@@ -198,13 +198,13 @@ class TrainTask(Task):
 
                 # Tracking the model parameters
                 train_dataset_version = module.get_table_version(spark,f"{db_out}.{train_dataset}")
-                test_dataset_version = module.get_table_version(spark,f"{db_out}.{test_dataset}")
+                # test_dataset_version = module.get_table_version(spark,f"{db_out}.{test_dataset}") # done in validation step
                 fs_table_version = module.get_table_version(spark,f"{fs_schema}.{fs_table}")
                 mlflow.set_tag("train_dataset_version", train_dataset_version)
-                mlflow.set_tag("test_dataset_version", test_dataset_version)
+                # mlflow.set_tag("test_dataset_version", test_dataset_version) # done in validation step
                 mlflow.set_tag("fs_table_version", fs_table_version)
                 mlflow.set_tag("train_dataset", f"{db_out}.{train_dataset}")
-                mlflow.set_tag("test_dataset", f"{db_out}.{test_dataset}")
+                # mlflow.set_tag("test_dataset", f"{db_out}.{test_dataset}") # done in validation step
                 mlflow.set_tag("raw_data", f"{db_in}.{raw_data_table}")
                 mlflow.set_tag("raw_labels", f"{db_in}.{label_table}")
                 mlflow.set_tag("environment run", f"{env}") # Tag the environment where the run is done
