@@ -34,7 +34,6 @@ class ValidationTask(Task):
         self.logger.info("input configs: {0}".format(input_conf))
 
         db_in = input_conf["database"]  
-        train_dataset = input_conf["train_dataset"] 
         test_dataset = input_conf["test_dataset"]            
 
         # Output
