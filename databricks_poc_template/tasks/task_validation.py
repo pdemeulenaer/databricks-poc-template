@@ -153,7 +153,8 @@ class ValidationTask(Task):
                 print(f"Minimal accuracy threshold: {minimal_threshold:5.2f}")          
                 if test_accuracy >= minimal_threshold: 
                     mlflow.set_tag("validation", "passed")
-                    client.transition_model_version_stage(name=model_name, version=version, stage="Staging")
+                    if env == 'staging': 
+                        client.transition_model_version_stage(name=model_name, version=version, stage="Staging")
                 else: 
                     mlflow.set_tag("validation", "failed")
 
