@@ -187,4 +187,36 @@ environments:
             max_retries: 0
             spark_python_task:
               python_file: "file://databricks_poc_template/tasks/task_monitoring.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_dev.yml" ]                                          
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_dev.yml" ]    
+
+      - name: "monitoring-workflow-uat"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *staging-pool-cluster
+        tasks:
+          - task_key: "step-monitoring-task"
+            description: "Step monitoring Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://databricks_poc_template/tasks/task_monitoring.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_uat.yml" ]   
+
+      - name: "monitoring-workflow-prod"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *staging-pool-cluster
+        tasks:
+          - task_key: "step-monitoring-task"
+            description: "Step monitoring Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://databricks_poc_template/tasks/task_monitoring.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_prod.yml" ]                                                                 

@@ -124,49 +124,48 @@ class MonitoringTask(Task):
             print(traceback.format_exc())
             raise e        
 
-        # ========================================
-        # 3. Performance monitoring  (Here assumption of no delayed outcome!)
-        # ========================================   
-        try:        
+        # # ========================================
+        # # 3. Performance monitoring  (Here assumption of no delayed outcome!)
+        # # ========================================   
+        # try:        
 
-            test_dataset_pd = test_dataset.toPandas()
+        #     test_dataset_pd = test_dataset.toPandas()
 
-            # Load the target labels of the unseen data (the ones we tried to infer in step 1.1). Here is the assumption of no delayed outcome... 
-            df_with_predictions = df_with_predictions.join(label_table, ['Id','hour'])
+        #     # Load the target labels of the unseen data (the ones we tried to infer in step 1.1). Here is the assumption of no delayed outcome... 
+        #     df_with_predictions = df_with_predictions.join(label_table, ['Id','hour'])
             
-            # Performance drift calculation
-            data_columns = ColumnMapping()
-            data_columns.target = 'target'
-            data_columns.prediction = 'prediction'
-            list_columns = [item for item in test_dataset_pd.columns if item not in ['target','prediction']]
-            data_columns.numerical_features = list_columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
+        #     # Performance drift calculation
+        #     data_columns = ColumnMapping()
+        #     data_columns.target = 'target'
+        #     data_columns.prediction = 'prediction'
+        #     list_columns = [item for item in test_dataset_pd.columns if item not in ['target','prediction']]
+        #     data_columns.numerical_features = list_columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
 
-            performance_drift_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
-            df_with_predictions_pd = df_with_predictions.toPandas()
-            print(test_dataset_pd.columns)
-            print(df_with_predictions_pd.columns)
-            print(test_dataset_pd.head())
-            print(df_with_predictions_pd.head())
-            performance_drift_profile.calculate(test_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
-            performance_drift_profile_dict = json.loads(performance_drift_profile.json())
-            print(performance_drift_profile.json())
-            print(performance_drift_profile_dict)
+        #     performance_drift_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
+        #     df_with_predictions_pd = df_with_predictions.toPandas()
+        #     print(test_dataset_pd.columns)
+        #     print(df_with_predictions_pd.columns)
+        #     print(test_dataset_pd.head())
+        #     print(df_with_predictions_pd.head())
+        #     performance_drift_profile.calculate(test_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
+        #     performance_drift_profile_dict = json.loads(performance_drift_profile.json())
+        #     print(performance_drift_profile.json())
+        #     print(performance_drift_profile_dict)
             
-            # Save the data monitoring to data lake 
-            performance_monitoring_json = json.dumps(performance_drift_profile_dict)
-            performance_monitoring_df = spark.read.json(sc.parallelize([performance_monitoring_json]))
-            print(performance_monitoring_df)
-            performance_monitoring_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{performance_monitoring}") 
+        #     # Save the data monitoring to data lake 
+        #     performance_monitoring_json = json.dumps(performance_drift_profile_dict)
+        #     performance_monitoring_df = spark.read.json(sc.parallelize([performance_monitoring_json]))
+        #     print(performance_monitoring_df)
+        #     performance_monitoring_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{performance_monitoring}") 
 
-            self.logger.info("Step 3 completed: performance monitoring")  
+        #     self.logger.info("Step 3 completed: performance monitoring")  
 
-        except Exception as e:
-            print("Errored on step 3: performance monitoring")
-            print("Exception Trace: {0}".format(e))
-            print(traceback.format_exc())
-            raise e    
+        # except Exception as e:
+        #     print("Errored on step 3: performance monitoring")
+        #     print("Exception Trace: {0}".format(e))
+        #     print(traceback.format_exc())
+        #     raise e    
        
-
     def launch(self):
         self.logger.info("Launching monitoring task")
         self._monitoring()

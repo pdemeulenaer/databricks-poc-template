@@ -55,7 +55,15 @@ inference_prod: # TODO:
 
 monitoring_dev: # TODO:
 	dbx deploy monitoring-workflow-dev
-	dbx launch monitoring-workflow-dev --trace				
+	dbx launch monitoring-workflow-dev --trace		
+
+monitoring_uat: # TODO:
+	dbx deploy monitoring-workflow-uat
+	dbx launch monitoring-workflow-uat --trace	
+
+monitoring_prod: # TODO:
+	dbx deploy monitoring-workflow-prod
+	dbx launch monitoring-workflow-prod --trace					
 
 message:
 	echo hello $(foo)
