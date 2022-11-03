@@ -158,10 +158,10 @@ class MonitoringTask(Task):
             print(performance_monitoring_df)
             performance_monitoring_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{performance_monitoring}") 
 
-            self.logger.info("Step 1.3 completed: performance monitoring")  
+            self.logger.info("Step 3 completed: performance monitoring")  
 
         except Exception as e:
-            print("Errored on step 1.2: data monitoring")
+            print("Errored on step 3: performance monitoring")
             print("Exception Trace: {0}".format(e))
             print(traceback.format_exc())
             raise e    
