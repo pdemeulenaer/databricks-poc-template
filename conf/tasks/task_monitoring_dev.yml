@@ -3,8 +3,9 @@ environment: "dev"
 data:
   input:
     database: "default"
-    scored_inference_dataset: "scored_inference_dataset"
+    train_dataset: "train_iris_dataset"
     test_dataset: "test_iris_dataset"
+    scored_inference_dataset: "scored_inference_dataset"    
   output:
     database: "default"
 
