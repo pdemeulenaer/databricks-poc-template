@@ -103,7 +103,7 @@ class InferenceTask(Task):
             display(df_with_predictions)    
 
             # Write scored data
-            df_with_predictions.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{scored_inference_dataset}")                             
+            # df_with_predictions.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{scored_inference_dataset}")                             
 
             # print("Step 2. completed: model inference")  
             self.logger.info("Step 2. completed: model inference")                
