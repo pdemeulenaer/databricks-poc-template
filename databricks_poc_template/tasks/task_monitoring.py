@@ -46,7 +46,7 @@ class MonitoringTask(Task):
 
         db_out = output_conf["database"] 
         data_monitoring = output_conf["data_monitoring"] 
-        performance_monitoringing = output_conf["performance_monitoringing"] 
+        performance_monitoring = output_conf["performance_monitoring"] 
 
         # Model configs
         model_conf = self.conf["model"]
