@@ -5,10 +5,12 @@ data:
     database: "default"
     train_dataset: "train_iris_dataset"
     test_dataset: "test_iris_dataset"
-    scored_inference_dataset: "scored_inference_dataset"    
+    scored_inference_dataset: "scored_inference_dataset"  
+    label_table: "label_table"  
   output:
     database: "default"
     data_monitoring: "data_monitoring" 
+    performance_monitoring: "performance_monitoring"
 
 model:
   model_name: "IrisClassificationRF"
