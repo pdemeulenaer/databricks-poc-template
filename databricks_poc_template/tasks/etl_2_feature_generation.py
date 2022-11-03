@@ -1,9 +1,9 @@
 from databricks_poc_template.common import Task
+from databricks_poc_template import module
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from pyspark.sql.functions import *
 from databricks import feature_store
-from databricks_poc_template import module
 
 
 class ETL2FeatureGenerationTask(Task):

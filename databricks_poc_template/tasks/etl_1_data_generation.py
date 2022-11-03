@@ -1,4 +1,5 @@
 from databricks_poc_template.common import Task
+from databricks_poc_template import module
 import numpy as np
 import pandas as pd
 import random
@@ -6,7 +7,6 @@ import uuid
 from sklearn.datasets import load_iris
 from sklearn.preprocessing import MinMaxScaler
 from pyspark.sql.functions import *
-from databricks_poc_template import module
 
 
 class ETL1DataGenerationTask(Task):
