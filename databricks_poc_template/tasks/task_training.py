@@ -124,7 +124,6 @@ class TrainTask(Task):
 
             # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
             exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
-            excluded_df = raw_data_with_labels.select(exclude_columns)
             training_set = fs.create_training_set(
                 df = raw_data_with_labels,
                 feature_lookups = feature_lookups,
@@ -138,8 +137,8 @@ class TrainTask(Task):
             training_df.show(5)
         
             # Collect data into a Pandas array for training
-            features_and_label = training_df.columns
-            data_pd = training_df.toPandas()[features_and_label]
+            # features_and_label = training_df.columns
+            data_pd = training_df.toPandas() #[features_and_label]
 
             # Do the train-test split
             train, test = train_test_split(data_pd, train_size=0.7, random_state=123)
