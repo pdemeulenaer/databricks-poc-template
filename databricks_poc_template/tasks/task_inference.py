@@ -98,8 +98,12 @@ class InferenceTask(Task):
             latest_model_version = int(latest_model.version)
             model_uri = f"models:/" + model_name + f"/{latest_model_version}"
 
+            print(model_uri)
+            raw_data.show(5,False)
+
             # Call score_batch to get the predictions from the model
             df_with_predictions = fs.score_batch(model_uri, raw_data)
+            df_with_predictions.show(5,False)
             display(df_with_predictions)    
 
             # Write scored data
