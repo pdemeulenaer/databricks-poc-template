@@ -103,7 +103,7 @@ class InferenceTask(Task):
             display(df_with_predictions)    
 
             # Write scored data
-            # df_with_predictions.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{scored_inference_dataset}")                             
+            df_with_predictions.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{scored_inference_dataset}")                             
 
             # print("Step 2. completed: model inference")  
             self.logger.info("Step 2. completed: model inference")                
@@ -112,101 +112,7 @@ class InferenceTask(Task):
             print("Errored on step 2.: model inference")
             print("Exception Trace: {0}".format(e))
             print(traceback.format_exc())
-            raise e
-
-        # # ========================================
-        # # 3. Data monitoring
-        # # ========================================  
-
-        # try:       
-        #     # Extract the right version of the training dataset (as logged in MLflow)
-        #     client = mlflow.tracking.MlflowClient()
-        #     run = client.get_run(latest_model.run_id)
-        #     train_dataset_version = run.data.tags['train_dataset_version']
-        #     train_dataset_path = run.data.tags['train_dataset_path']
-        #     # test_dataset_version = run.data.tags['test_dataset_version']
-        #     # fs_table_version = run.data.tags['fs_table_version']
-        #     train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
-        #     train_dataset_pd = train_dataset.toPandas()
-
-        #     train_dataset_pd.drop('target', inplace=True, axis=1)
-            
-        #     # Data drift calculation
-        #     data_columns = ColumnMapping()
-        #     data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
-        #     data_drift_profile = Profile(sections=[DataDriftProfileSection()])
-        #     df_with_predictions_pd = df_with_predictions.toPandas()
-        #     print(train_dataset_pd.columns)
-        #     print(df_with_predictions_pd.columns)
-        #     data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
-        #     data_drift_profile_dict = json.loads(data_drift_profile.json())
-        #     print(data_drift_profile.json())
-        #     print(data_drift_profile_dict['data_drift'])
-            
-        #     # Save the data monitoring to data lake 
-        #     data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
-        #     data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
-        #     display(data_monitor_df)
-        #     data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
-
-        #     self.logger.info("Step 1.2 completed: data monitoring")  
-
-        # except Exception as e:
-        #     print("Errored on step 1.2: data monitoring")
-        #     print("Exception Trace: {0}".format(e))
-        #     print(traceback.format_exc())
-        #     raise e        
-
-
-        # # try:
-        # # ========================================
-        # # 1.3 Performance monitoring  (Here assumption of no delayed outcome!)
-        # # ========================================            
-
-        # # Extract the right version of the training dataset (as logged in MLflow)
-        # client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri, registry_uri=registry_uri)
-        # run = client.get_run(latest_model.run_id)
-        # train_dataset_version = run.data.tags['train_dataset_version']
-        # train_dataset_path = run.data.tags['train_dataset_path']
-        # # test_dataset_version = run.data.tags['test_dataset_version']
-        # # fs_table_version = run.data.tags['fs_table_version']
-        # train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
-        # train_dataset_pd = train_dataset.toPandas()
-
-        # # Load the target labels of the unseen data (the ones we tried to infer in step 1.1). Here is the assumption of no delayed outcome... 
-        # labels = spark.read.format('delta').load(cwd + 'labels')
-        # df_with_predictions = df_with_predictions.join(labels, ['Id','hour'])
-        
-        # # Performance drift calculation
-        # data_columns = ColumnMapping()
-        # data_columns.target = 'target'
-        # data_columns.prediction = 'prediction'
-        # data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
-
-        # performance_drift_profile = Profile(sections=[ClassificationPerformanceProfileSection()])
-        # df_with_predictions_pd = df_with_predictions.toPandas()
-        # print(train_dataset_pd.columns)
-        # print(df_with_predictions_pd.columns)
-        # print(train_dataset_pd.head())
-        # print(df_with_predictions_pd.head())
-        # performance_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
-        # performance_drift_profile_dict = json.loads(performance_drift_profile.json())
-        # print(performance_drift_profile.json())
-        # print(performance_drift_profile_dict)
-        
-        # # Save the data monitoring to data lake 
-        # performance_monitor_json = json.dumps(performance_drift_profile_dict)
-        # performance_monitor_df = spark.read.json(sc.parallelize([performance_monitor_json]))
-        # print(performance_monitor_df)
-        # performance_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"performance_monitoring")
-
-        # self.logger.info("Step 1.3 completed: performance monitoring")  
-
-        # # except Exception as e:
-        # #     print("Errored on step 1.2: data monitoring")
-        # #     print("Exception Trace: {0}".format(e))
-        # #     print(traceback.format_exc())
-        # #     raise e           
+            raise e         
 
     def launch(self):
         self.logger.info("Launching inference task")
