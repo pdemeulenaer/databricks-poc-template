@@ -64,14 +64,13 @@ class MonitoringTask(Task):
             self.logger.info(f"DBFS directory: {l}")   
 
         try:
-
             # Extract the right version of the training dataset (as logged in MLflow)        
             latest_model = module.get_latest_model_version(model_name,"databricks")
             latest_model_version = int(latest_model.version)
             model_uri = f"models:/" + model_name + f"/{latest_model_version}"
             client = mlflow.tracking.MlflowClient()
             run = client.get_run(latest_model.run_id)
-            
+
             train_dataset_version = run.data.tags['train_dataset_version']
             test_dataset_version = run.data.tags['test_dataset_version']
 
@@ -108,10 +107,10 @@ class MonitoringTask(Task):
             print(data_drift_profile_dict['data_drift'])
             
             # Save the data monitoring to data lake 
-            data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
-            data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
-            display(data_monitor_df)
-            data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
+            data_monitoring_json = json.dumps(data_drift_profile_dict['data_drift'])
+            data_monitoring_df = spark.read.json(sc.parallelize([data_monitoring_json]))
+            display(data_monitoring_df)
+            data_monitoring_df.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{data_monitoring}") 
 
             self.logger.info("Step 2 completed: data monitoring")  
 

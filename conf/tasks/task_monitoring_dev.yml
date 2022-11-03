@@ -8,6 +8,7 @@ data:
     scored_inference_dataset: "scored_inference_dataset"    
   output:
     database: "default"
+    data_monitoring: "data_monitoring" 
 
 model:
   model_name: "IrisClassificationRF"
