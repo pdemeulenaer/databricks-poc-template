@@ -73,7 +73,7 @@ class MonitoringTask(Task):
 
             train_dataset = spark.read.option("versionAsOf", train_dataset_version).table(f"{db_in}.{train_dataset}")
             test_dataset = spark.read.option("versionAsOf", test_dataset_version).table(f"{db_in}.{test_dataset}")
-            scored_inference_dataset = spark.table(f"{db_in}.{scored_inference_dataset}")                        
+            df_with_predictions = spark.table(f"{db_in}.{scored_inference_dataset}")                        
 
             self.logger.info("Step 1. completed: Loading the data")   
           
@@ -88,7 +88,6 @@ class MonitoringTask(Task):
         # ========================================  
 
         try:       
-
             train_dataset_pd = train_dataset.toPandas()
             train_dataset_pd.drop('target', inplace=True, axis=1)
             
