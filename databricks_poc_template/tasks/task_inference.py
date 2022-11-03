@@ -94,7 +94,7 @@ class InferenceTask(Task):
             fs = feature_store.FeatureStoreClient()
 
             # Get the model URI
-            latest_model = module.get_latest_model_version(model_name,registry_uri)
+            latest_model = module.get_latest_model_version(model_name,"databricks")
             latest_model_version = int(latest_model.version)
             model_uri = f"models:/" + model_name + f"/{latest_model_version}"
 
