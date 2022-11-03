@@ -184,9 +184,9 @@ class TrainTask(Task):
                                     cv=5)
 
                 # Remove unneeded data
-                x_train = train.drop(["target",'Id', 'hour','date'], axis=1)
+                x_train = train.drop(["target"], axis=1)
                 y_train = train.target                
-                # x_test = test.drop(["target",'Id', 'hour','date'], axis=1)
+                # x_test = test.drop(["target"], axis=1)
                 # y_test = test.target
 
                 # Cross validation model fit
