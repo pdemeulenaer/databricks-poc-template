@@ -126,8 +126,8 @@ environments:
                 package: evidently
             max_retries: 0
             spark_python_task:
-              python_file: "file://databricks_poc_template/tasks/step_inference.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]         
+              python_file: "file://databricks_poc_template/tasks/task_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_inference_dev.yml" ]         
 
       - name: "inference-workflow-uat"
         job_clusters:
@@ -142,8 +142,8 @@ environments:
                 package: evidently
             max_retries: 0
             spark_python_task:
-              python_file: "file://databricks_poc_template/tasks/step_inference.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]            
+              python_file: "file://databricks_poc_template/tasks/task_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_inference_uat.yml" ]            
 
       - name: "inference-workflow-prod"
         job_clusters:
