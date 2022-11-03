@@ -1,3 +1,5 @@
+[![CI pipeline](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml)
+
 # databricks-poc-template
 
 ## Intro
