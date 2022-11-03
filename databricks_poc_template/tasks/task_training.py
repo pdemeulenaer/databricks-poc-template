@@ -123,7 +123,8 @@ class TrainTask(Task):
             ]
 
             # Create the training dataset (includes the raw input data merged with corresponding features from feature table)
-            exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width'] # TODO: should I exclude the 'Id', 'hour','date'? 
+            exclude_columns = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'Id', 'hour','date'] # TODO: should I exclude the 'Id', 'hour','date'? 
+            excluded_df = raw_data_with_labels.select(exclude_columns)
             training_set = fs.create_training_set(
                 df = raw_data_with_labels,
                 feature_lookups = feature_lookups,
