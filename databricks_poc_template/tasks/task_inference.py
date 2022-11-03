@@ -86,114 +86,76 @@ class InferenceTask(Task):
             # print(traceback.format_exc())
             raise e    
 
+        # ========================================
+        # 2. Model inference
+        # ========================================
+        try:   
+            # Initialize the Feature Store client
+            fs = feature_store.FeatureStoreClient()
 
-        # # try:
+            # Get the model URI
+            latest_model = module.get_latest_model_version(model_name,registry_uri)
+            latest_model_version = int(latest_model.version)
+            model_uri = f"models:/" + model_name + f"/{latest_model_version}"
+
+            # Call score_batch to get the predictions from the model
+            df_with_predictions = fs.score_batch(model_uri, raw_data)
+            display(df_with_predictions)    
+
+            # Write scored data
+            df_with_predictions.write.format("delta").mode("overwrite").option("overwriteSchema", "true").saveAsTable(f"{db_out}.{scored_inference_dataset}")                             
+
+            # print("Step 2. completed: model inference")  
+            self.logger.info("Step 2. completed: model inference")                
+
+        except Exception as e:
+            print("Errored on step 2.: model inference")
+            print("Exception Trace: {0}".format(e))
+            print(traceback.format_exc())
+            raise e
+
         # # ========================================
-        # # 1.1 Model inference
-        # # ========================================
-        
-        # # # Load model from MLflow experiment
+        # # 3. Data monitoring
+        # # ========================================  
 
-        # # # Initialize client
-        # # client = mlflow.tracking.MlflowClient()
-        
-        # # # Extract the model in Staging mode from Model Registry
-        # # for mv in client.search_model_versions("name='{0}'".format(model_name)):
-        # #     if dict(mv)['current_stage'] == "Staging":
-        # #         model_dict = dict(mv)
-        # #         break   
+        # try:       
+        #     # Extract the right version of the training dataset (as logged in MLflow)
+        #     client = mlflow.tracking.MlflowClient()
+        #     run = client.get_run(latest_model.run_id)
+        #     train_dataset_version = run.data.tags['train_dataset_version']
+        #     train_dataset_path = run.data.tags['train_dataset_path']
+        #     # test_dataset_version = run.data.tags['test_dataset_version']
+        #     # fs_table_version = run.data.tags['fs_table_version']
+        #     train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
+        #     train_dataset_pd = train_dataset.toPandas()
 
-        # # print('Model extracted run_id: ', model_dict['run_id'])
-        # # print('Model extracted version number: ', model_dict['version'])
-        # # print('Model extracted stage: ', model_dict['current_stage']) 
-        # # print('Model path: ', model_dict['source'])            
+        #     train_dataset_pd.drop('target', inplace=True, axis=1)
+            
+        #     # Data drift calculation
+        #     data_columns = ColumnMapping()
+        #     data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
+        #     data_drift_profile = Profile(sections=[DataDriftProfileSection()])
+        #     df_with_predictions_pd = df_with_predictions.toPandas()
+        #     print(train_dataset_pd.columns)
+        #     print(df_with_predictions_pd.columns)
+        #     data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
+        #     data_drift_profile_dict = json.loads(data_drift_profile.json())
+        #     print(data_drift_profile.json())
+        #     print(data_drift_profile_dict['data_drift'])
+            
+        #     # Save the data monitoring to data lake 
+        #     data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
+        #     data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
+        #     display(data_monitor_df)
+        #     data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
 
-        # # # De-serialize the model
-        # # # mlflow_path = model_dict['source'] 
-        # # # model = mlflow.pyfunc.load_model(mlflow_path) # Load model as a PyFuncModel.                              
-        # # run_id = model_dict['run_id']
-        # # model_path = "runs:/{0}/model".format(run_id)
-        # # print('Model path from run_id: ', model_path)   
-        # # model = mlflow.pyfunc.load_model(model_path)
+        #     self.logger.info("Step 1.2 completed: data monitoring")  
 
-        # # # Prediction
-        # # y_data_pred = model.predict(pd.DataFrame(x_data)) 
-
-        # # # Save scored inference dataset
-        # # data_scored_pd = pd.DataFrame(data=np.column_stack((x_data,y_data_pred)), columns=['sepal_length', 'sepal_width', 'petal_length', 'petal_width', 'label_scored'])
-        # # data_scored_pd.loc[data_scored_pd['label_scored']==0,'species'] = 'setosa'
-        # # data_scored_pd.loc[data_scored_pd['label_scored']==1,'species'] = 'versicolor'
-        # # data_scored_pd.loc[data_scored_pd['label_scored']==2,'species'] = 'virginica'
-        # # data_scored_df = spark.createDataFrame(data_scored_pd)
-        # # data_scored_df.write.format("delta").mode("overwrite").save(output_path+scored_inference_dataset)      
-
-        # # Initialize the Feature Store client
-        # fs = feature_store.FeatureStoreClient(feature_store_uri=registry_uri, model_registry_uri=registry_uri)
-
-        # # Get the model URI
-        # latest_model = module.get_latest_model_version(model_name,registry_uri)
-        # latest_model_version = int(latest_model.version)
-        # model_uri = f"models:/" + model_name + f"/{latest_model_version}"
-
-        # # Call score_batch to get the predictions from the model
-        # df_with_predictions = fs.score_batch(model_uri, raw_data)
-        # display(df_with_predictions)    
-
-        # # Write scored data
-        # df_with_predictions.write.format("delta").mode("overwrite").save(cwd+scored_inference_dataset)                  
-
-        # # print("Step 1.1 completed: model inference")  
-        # self.logger.info("Step 1.1 completed: model inference")                
-
-        # # except Exception as e:
-        # #     print("Errored on step 1.1: model inference")
-        # #     print("Exception Trace: {0}".format(e))
-        # #     print(traceback.format_exc())
-        # #     raise e   y
-
-
-        # # try:
-        # # ========================================
-        # # 1.2 Data monitoring
-        # # ========================================           
-
-        # # Extract the right version of the training dataset (as logged in MLflow)
-        # client = mlflow.tracking.MlflowClient(tracking_uri=tracking_uri, registry_uri=registry_uri)
-        # run = client.get_run(latest_model.run_id)
-        # train_dataset_version = run.data.tags['train_dataset_version']
-        # train_dataset_path = run.data.tags['train_dataset_path']
-        # # test_dataset_version = run.data.tags['test_dataset_version']
-        # # fs_table_version = run.data.tags['fs_table_version']
-        # train_dataset = spark.read.format("delta").option("versionAsOf", train_dataset_version).load(train_dataset_path)
-        # train_dataset_pd = train_dataset.toPandas()
-
-        # train_dataset_pd.drop('target', inplace=True, axis=1)
-        
-        # # Data drift calculation
-        # data_columns = ColumnMapping()
-        # data_columns.numerical_features = train_dataset_pd.columns #['sl_norm', 'sw_norm', 'pl_norm', 'pw_norm']
-        # data_drift_profile = Profile(sections=[DataDriftProfileSection()])
-        # df_with_predictions_pd = df_with_predictions.toPandas()
-        # print(train_dataset_pd.columns)
-        # print(df_with_predictions_pd.columns)
-        # data_drift_profile.calculate(train_dataset_pd, df_with_predictions_pd, column_mapping=data_columns) 
-        # data_drift_profile_dict = json.loads(data_drift_profile.json())
-        # print(data_drift_profile.json())
-        # print(data_drift_profile_dict['data_drift'])
-        
-        # # Save the data monitoring to data lake 
-        # data_monitor_json = json.dumps(data_drift_profile_dict['data_drift'])
-        # data_monitor_df = spark.read.json(sc.parallelize([data_monitor_json]))
-        # display(data_monitor_df)
-        # data_monitor_df.write.option("header", "true").format("delta").mode("overwrite").save(cwd+"data_monitoring")
-
-        # self.logger.info("Step 1.2 completed: data monitoring")  
-
-        # # except Exception as e:
-        # #     print("Errored on step 1.2: data monitoring")
-        # #     print("Exception Trace: {0}".format(e))
-        # #     print(traceback.format_exc())
-        # #     raise e        
+        # except Exception as e:
+        #     print("Errored on step 1.2: data monitoring")
+        #     print("Exception Trace: {0}".format(e))
+        #     print(traceback.format_exc())
+        #     raise e        
 
 
         # # try:
