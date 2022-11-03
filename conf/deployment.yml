@@ -168,4 +168,23 @@ environments:
             max_retries: 0
             spark_python_task:
               python_file: "file://databricks_poc_template/tasks/step_inference.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]                               
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]      
+
+      #############################################################
+      # Monitoring workflow
+      #############################################################
+      - name: "monitoring-workflow-dev"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *dev-pool-cluster
+        tasks:
+          - task_key: "step-monitoring-task"
+            description: "Step monitoring Task"
+            job_cluster_key: "default"
+            libraries:
+            - pypi:
+                package: evidently
+            max_retries: 0
+            spark_python_task:
+              python_file: "file://databricks_poc_template/tasks/task_monitoring.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_dev.yml" ]                                          
