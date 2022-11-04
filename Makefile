@@ -10,7 +10,7 @@ format:
 	black databricks_poc_template/*.py
 
 test:
-	python -m pytest -vv --disable-warnings tests/ --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html #--doctest-modules #--cov=hello test_hello.py
+	python -m pytest -vv --disable-warnings tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html
 
 
 # For executions in command line (for test purpose, on interactive clusters)

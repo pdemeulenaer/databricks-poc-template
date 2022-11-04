@@ -52,10 +52,10 @@ jobs:
           make lint 
           cat pylint_report.txt  
 
-#       - name: Run unit tests
-#         run: |
-#           echo "Launching unit tests"
-#           pytest tests/unit
+      - name: Run unit tests
+        run: |
+          echo "Launching unit tests"
+          make test 
 
 
 
