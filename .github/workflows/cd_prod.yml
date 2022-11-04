@@ -1,0 +1,72 @@
+name: CD to Prod
+
+on:
+  push:
+    branches:  
+      - 'main'        
+
+
+jobs:
+  cd-prod:
+
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }} 
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+      # DATABRICKS_JOBS_API_VERSION: 2.1
+
+    steps:
+      # - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis   
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+          cache-dependency-path: setup.py
+
+      - name: Install pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install dependencies and project in dev mode
+        run: |
+          pip install -e ".[local,test]"
+
+      # TODO: ADD SHIFT TO PROD JOB!!!
+
+      - name: Deploy the inference job to PROD
+        run: |
+          make inference_prod 
+
+      - name: Deploy the monitoring job to PROD
+        run: |
+          make monitoring_prod           
+
+      - name: Get the version number
+        run: |
+          cat databricks_poc_template/__init__.py
+          s=$(<databricks_poc_template/__init__.py)
+          s=${s#*'"'}; 
+          version=${s%'"'*}
+          echo v"$version"
+          echo "version_env=v$version" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.version_env }}
+          release_name: Release ${{ env.version_env }}
+          body: |
+            Release for version ${{ env.version_env }}.
+          draft: false
+          prerelease: false
