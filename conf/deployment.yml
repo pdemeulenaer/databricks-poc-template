@@ -133,6 +133,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!
         tasks:
           - task_key: "step-infer-task"
             description: "Step Inference Task"
@@ -149,6 +150,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *prod-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: step-transition-to-prod
             description: step transition to prod task
@@ -177,6 +179,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
             description: "Step monitoring Task"
@@ -193,6 +196,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
             description: "Step monitoring Task"
@@ -209,6 +213,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
             description: "Step monitoring Task"
