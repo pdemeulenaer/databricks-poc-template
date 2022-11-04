@@ -46,6 +46,8 @@ jobs:
         run: |
           make train_workflow_staging
 
+      # TODO: HERE DO THE DEPLOYMENT TO UAT ONLY IF TRAINING IN STAGING SUCCESSFUL !!!
+
       - name: Deploy the inference job to UAT
         run: |
           make inference_uat
