@@ -39,7 +39,9 @@ jobs:
         run: |
           pip install -e ".[local,test]"
 
-      # TODO: ADD SHIFT TO PROD JOB!!!
+      - name: Deploy the transition to PROD job
+        run: |
+          make transition_prod 
 
       - name: Deploy the inference job to PROD
         run: |
