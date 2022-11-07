@@ -218,7 +218,7 @@ environments:
       - name: "monitoring-workflow-prod"
         job_clusters:
           - job_cluster_key: "default"
-            <<: *staging-pool-cluster
+            <<: *prod-pool-cluster
         # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
