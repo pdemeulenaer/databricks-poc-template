@@ -41,7 +41,7 @@ train_workflow_staging:
 	dbx deploy train-workflow-staging
 	dbx launch train-workflow-staging --trace			
 
-inference_dev: # TODO:
+inference_dev:
 	dbx deploy inference-workflow-dev
 	dbx launch inference-workflow-dev --trace	
 
@@ -53,7 +53,11 @@ inference_prod: # TODO:
 	dbx deploy inference-workflow-prod
 	dbx launch inference-workflow-prod --trace	
 
-monitoring_dev: # TODO:
+transition_prod:
+	dbx deploy transition-to-prod-workflow
+	dbx launch transition-to-prod-workflow --trace	
+
+monitoring_dev:
 	dbx deploy monitoring-workflow-dev
 	dbx launch monitoring-workflow-dev --trace		
 
