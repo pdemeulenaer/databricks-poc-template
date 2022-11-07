@@ -10,7 +10,7 @@ format:
 	black databricks_poc_template/*.py
 
 test:
-	python -m pytest -vv --disable-warnings tests/ --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html #--doctest-modules #--cov=hello test_hello.py
+	python -m pytest -vv --disable-warnings tests/unit --junitxml=junit/test-results.xml --cov=. --cov-config=.coveragerc --cov-report xml:coverage.xml --cov-report term #--cov-report html:cov_html
 
 
 # For executions in command line (for test purpose, on interactive clusters)
@@ -41,7 +41,7 @@ train_workflow_staging:
 	dbx deploy train-workflow-staging
 	dbx launch train-workflow-staging --trace			
 
-inference_dev: # TODO:
+inference_dev:
 	dbx deploy inference-workflow-dev
 	dbx launch inference-workflow-dev --trace	
 
@@ -53,7 +53,11 @@ inference_prod: # TODO:
 	dbx deploy inference-workflow-prod
 	dbx launch inference-workflow-prod --trace	
 
-monitoring_dev: # TODO:
+transition_prod:
+	dbx deploy transition-to-prod-workflow
+	dbx launch transition-to-prod-workflow --trace	
+
+monitoring_dev:
 	dbx deploy monitoring-workflow-dev
 	dbx launch monitoring-workflow-dev --trace		
 

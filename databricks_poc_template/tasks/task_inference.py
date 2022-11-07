@@ -103,7 +103,7 @@ class InferenceTask(Task):
 
             # Call score_batch to get the predictions from the model
             # raw_data = raw_data.select('sepal_length', 'sepal_width', 'petal_length', 'petal_width') # FIXME:
-            df_with_predictions = fs.score_batch(model_uri, raw_data)
+            df_with_predictions = fs.score_batch(model_uri, raw_data) # FIXME: this should be MODIFIED. Follow Joshua way of doing !!!
             df_with_predictions.show(5,False)
             display(df_with_predictions)    
 
