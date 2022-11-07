@@ -18,12 +18,12 @@ custom:
   staging-pool-cluster: &staging-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
-      instance_pool_id: "0520-103527-swamp3-pool-8kkbt5ma"
+      instance_pool_id: "1107-090611-akin92-pool-vroqllvm"
 
   prod-pool-cluster: &prod-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
-      instance_pool_id: "0520-103936-jokes3-pool-46dtg4oi"            
+      instance_pool_id: "1107-090742-pews93-pool-71i9rjjm"            
 
 
 environments:
@@ -133,6 +133,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!
         tasks:
           - task_key: "step-infer-task"
             description: "Step Inference Task"
@@ -149,17 +150,9 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *prod-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
-          - task_key: step-transition-to-prod
-            description: step transition to prod task
-            job_cluster_key: "default"
-            spark_python_task:
-              python_file: "file://databricks_poc_template/tasks/step_transition_to_prod.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]              
-
-          - task_key: "step-infer-task"
-            depends_on:
-              - task_key: "step-transition-to-prod"          
+          - task_key: "step-infer-task"       
             description: "Step Inference Task"
             job_cluster_key: "default"
             libraries:
@@ -167,8 +160,23 @@ environments:
                 package: evidently
             max_retries: 0
             spark_python_task:
-              python_file: "file://databricks_poc_template/tasks/step_inference.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/model.yml" ]      
+              python_file: "file://databricks_poc_template/tasks/task_inference.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_inference_prod.yml" ]   
+
+      #############################################################
+      # Transition to Prod workflow
+      #############################################################
+      - name: "transition-to-prod-workflow"
+        job_clusters:
+          - job_cluster_key: "default"
+            <<: *prod-pool-cluster          
+        tasks:
+          - task_key: step-transition-to-prod
+            description: step transition to prod task
+            job_cluster_key: "default"
+            spark_python_task:
+              python_file: "file://databricks_poc_template/tasks/task_transition_to_prod.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/task_transition_to_prod.yml" ]                   
 
       #############################################################
       # Monitoring workflow
@@ -177,6 +185,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
             description: "Step monitoring Task"
@@ -193,6 +202,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
             description: "Step monitoring Task"
@@ -209,6 +219,7 @@ environments:
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
+        # TODO: SCHEDULING SHOULD DEPEND ON ETL 1 AND 2 !!!            
         tasks:
           - task_key: "step-monitoring-task"
             description: "Step monitoring Task"

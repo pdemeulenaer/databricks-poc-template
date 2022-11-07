@@ -1,4 +1,52 @@
+[![CI pipeline](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml)
+
 # databricks-poc-template
+
+## Intro
+
+## Prerequisites
+
+### 1. How to set up your environment
+
+To be able to connect to the Databricks workspace from the command line, you need first to install the package databricks-cli (https://docs.databricks.com/dev-tools/cli/index.html) in your python environment:
+
+pip install databricks-cli
+Then you can configure the cli, using a PAT, a personal access token that should have been generated beforehand within the Databricks workspace:
+
+databricks configure --token
+Then you have to enter the name of the Databricks workspace (the "host"):
+
+Databricks Host (should begin with https://):
+And as well enter the token:
+
+Token:
+You then end up with a configuration file, ~/.databrickscfg, where you have the entered info:
+
+[DEFAULT]
+host = <workspace-URL>
+token = <personal-access-token>
+where DEFAULT is the default profile. We can work with different profiles, associated with different workspaces, but won't use them in the scope of the PoC since we are working within one workspace only. For more info on profiles, https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles
+
+### 2. The template creation with DBX
+The creation of Databricks template requires the installation of DBX. Follow https://dbx.readthedocs.io/en/latest/guides/python/python_quickstart/
+
+If you want to create an empty template, you basically need to initiate your project like this:
+
+dbx init -p \
+    "cicd_tool=GitHub Actions" \
+    -p "cloud=AWS" \
+    -p "project_name=<your project name>" \
+    -p "profile=DEFAULT" \
+    --no-input
+
+If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead.
+
+
+
+## Instructions to reproduce the different steps
+
+
+======================
 
 # Initial readme file after this
 This is a sample project for Databricks, generated via cookiecutter.

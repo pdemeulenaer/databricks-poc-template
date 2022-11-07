@@ -1,0 +1,28 @@
+environment: "staging"
+
+data:
+  input:
+    database: "default"
+    raw_data_table: "raw_data_table" 
+    label_table: "label_table" 
+    fs_schema: "feature_store_poc_template1"
+    fs_table: "scaled_features"  
+  output:
+    database: "default"
+    train_val_dataset: "train_val_iris_dataset"
+    train_dataset: "train_iris_dataset"
+    test_dataset: "test_iris_dataset"
+
+model:
+  model_name: "IrisClassificationRF"
+  experiment_name: "/Shared/simple-rf-sklearn_experiment"
+  hyperparameters_grid:
+    max_depth: [3, 10]
+    n_estimators: [30, 50]
+    max_features: ["auto"]
+    criterion: ["gini", "entropy"]
+  hyperparameters_fixed:
+    class_weight: "balanced"
+    bootstrap: "True"
+    random_state: "21"
+  minimal_threshold: 0.8
