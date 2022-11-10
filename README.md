@@ -45,6 +45,13 @@ If you want to create a pre-filled template with a use-case and adapted CICD pip
 
 ## Instructions to reproduce the different steps
 
+## TODO List
+
+- TODO: Generalize the feature list within the config files
+
+- TODO: Allow multiple config files in deployment.yml
+
+
 
 ======================
 
