@@ -1,5 +1,61 @@
 [![CI pipeline](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml)
 
+## Structure of the Repo
+
+.
+├── conf
+│   ├── deployment_original.yml
+│   ├── deployment.yml
+│   └── tasks
+│       ├── etl_1_data_generation.yml
+│       ├── etl_2_feature_generation.yml
+│       ├── sample_etl_config.yml
+│       ├── sample_ml_config.yml
+│       ├── task_inference_dev.yml
+│       ├── task_inference_prod.yml
+│       ├── task_inference_uat.yml
+│       ├── task_monitoring_dev.yml
+│       ├── task_monitoring_prod.yml
+│       ├── task_monitoring_uat.yml
+│       ├── task_training_dev.yml
+│       ├── task_training_staging.yml
+│       ├── task_transition_to_prod.yml
+│       ├── task_validation_dev.yml
+│       └── task_validation_staging.yml
+├── databricks_poc_template
+│   ├── common.py
+│   ├── __init__.py
+│   ├── module.py
+│   └── tasks
+│       ├── etl_1_data_generation.py
+│       ├── etl_2_feature_generation.py
+│       ├── __init__.py
+│       ├── sample_etl_task.py
+│       ├── sample_ml_task.py
+│       ├── task_inference.py
+│       ├── task_monitoring.py
+│       ├── task_training.py
+│       ├── task_transition_to_prod.py
+│       └── task_validation.py
+├── Makefile
+├── notebooks
+│   ├── etl_1_data_generation.py
+│   ├── etl_2_feature_generation.py
+│   └── sample_notebook.py
+├── pyproject.toml
+├── pytest.ini
+├── README.md
+├── setup.py
+├── sonar-project.properties
+└── tests
+    ├── entrypoint.py
+    ├── integration
+    │   └── e2e_test.py
+    └── unit
+        ├── conftest.py
+        └── sample_test.py
+
+
 # databricks-poc-template
 
 ## Intro
@@ -40,9 +96,7 @@ dbx init -p \
     --no-input
 
 If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead.
-
-
-
+    
 ## Instructions to reproduce the different steps
 
 ## TODO List
