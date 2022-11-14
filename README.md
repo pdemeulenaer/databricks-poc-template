@@ -170,6 +170,10 @@ dbx init -p \
 
 - TODO: find way to deploy Classic REST API from MLflow Model Registry
 
+- TODO: add how to add the repo into Github
+
+- TODO: add how to add this repo in Databricks Repos
+
 
 ======================
 
