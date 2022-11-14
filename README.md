@@ -63,6 +63,20 @@ Note: add hidden directories in the tree
 
 ## Intro
 
+This repository consists of a template that allows to develop and deploy a dummy machine learning model to a target Databricks workspace.
+
+The development and deployment lifecycle span on these environments:
+
+1. Development
+
+2. Staging
+
+3. UAT (or QA, or pre-prod)
+
+4. Production
+
+In this template, we work within a *single* Databricks workspace, so that the different environments are materialized by different Databricks clusters (another, more realistic approach would be to differentiate the environments using multiple Databricks workspaces). While the `Development` environment consists of a personal (often single node) interactive cluster, the other environments are materialized with 3 cluster pools 
+
 ## Prerequisites
 
 ### 1. How to set up your environment
@@ -110,7 +124,7 @@ dbx init -p \
     --no-input
 ```
 
-If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead.
+If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead.  
     
 ## Instructions to reproduce the different steps
 
