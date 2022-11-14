@@ -134,6 +134,7 @@ If you want to create a pre-filled template with a use-case and adapted CICD pip
 
 - TODO: Allow multiple config files in deployment.yml
 
+- TODO: find way to deploy Classic REST API from MLflow Model Registry
 
 
 ======================
