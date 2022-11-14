@@ -1,5 +1,7 @@
 [![CI pipeline](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml)
 
+# databricks-poc-template
+
 ## Structure of the Repo
 
 Note: add hidden directories in the tree
@@ -25,6 +27,7 @@ Note: add hidden directories in the tree
 │       ├── task_transition_to_prod.yml
 │       ├── task_validation_dev.yml
 │       └── task_validation_staging.yml
+├── .coveragerc
 ├── databricks_poc_template
 │   ├── common.py
 │   ├── __init__.py
@@ -40,11 +43,21 @@ Note: add hidden directories in the tree
 │       ├── task_training.py
 │       ├── task_transition_to_prod.py
 │       └── task_validation.py
+├── .dbx
+│   └── project.json
+├── .github
+│   └── workflows
+│       ├── cd_prod.yml
+│       ├── cd_staging.yml
+│       ├── ci.yml
+│       └── onrelease.yml
+├── .gitignore
 ├── Makefile
 ├── notebooks
 │   ├── etl_1_data_generation.py
 │   ├── etl_2_feature_generation.py
 │   └── sample_notebook.py
+├── .pylintrc
 ├── pyproject.toml
 ├── pytest.ini
 ├── README.md
@@ -59,7 +72,7 @@ Note: add hidden directories in the tree
         └── sample_test.py
 ```
 
-# databricks-poc-template
+
 
 ## Intro
 
