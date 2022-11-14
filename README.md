@@ -2,6 +2,8 @@
 
 ## Structure of the Repo
 
+Note: add hidden directories in the tree
+
 ```
 .
 ├── conf
@@ -67,22 +69,32 @@
 
 To be able to connect to the Databricks workspace from the command line, you need first to install the package databricks-cli (https://docs.databricks.com/dev-tools/cli/index.html) in your python environment:
 
+```
 pip install databricks-cli
+```
+
 Then you can configure the cli, using a PAT, a personal access token that should have been generated beforehand within the Databricks workspace:
 
+```
 databricks configure --token
-Then you have to enter the name of the Databricks workspace (the "host"):
+```
 
+Then you have to enter the name of the Databricks workspace (the "host"), and as well enter the token:
+
+```
 Databricks Host (should begin with https://):
-And as well enter the token:
-
 Token:
-You then end up with a configuration file, ~/.databrickscfg, where you have the entered info:
+```
 
+You then end up with a configuration file, `~/.databrickscfg`, where you have the entered info:
+
+```
 [DEFAULT]
 host = <workspace-URL>
 token = <personal-access-token>
-where DEFAULT is the default profile. We can work with different profiles, associated with different workspaces, but won't use them in the scope of the PoC since we are working within one workspace only. For more info on profiles, https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles
+```
+
+where `DEFAULT` is the default profile. We can work with different profiles, associated with different workspaces, but won't use them in the scope of the PoC since we are working within one workspace only. For more info on profiles, https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles
 
 ### 2. The template creation with DBX
 The creation of Databricks template requires the installation of DBX. Follow https://dbx.readthedocs.io/en/latest/guides/python/python_quickstart/
