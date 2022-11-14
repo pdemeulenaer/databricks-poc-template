@@ -2,6 +2,7 @@
 
 ## Structure of the Repo
 
+```
 .
 ├── conf
 │   ├── deployment_original.yml
@@ -54,7 +55,7 @@
     └── unit
         ├── conftest.py
         └── sample_test.py
-
+```
 
 # databricks-poc-template
 
@@ -88,12 +89,14 @@ The creation of Databricks template requires the installation of DBX. Follow htt
 
 If you want to create an empty template, you basically need to initiate your project like this:
 
+```
 dbx init -p \
     "cicd_tool=GitHub Actions" \
     -p "cloud=AWS" \
     -p "project_name=<your project name>" \
     -p "profile=DEFAULT" \
     --no-input
+```
 
 If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead.
     
