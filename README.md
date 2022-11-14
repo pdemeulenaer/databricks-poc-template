@@ -4,7 +4,6 @@
 
 ## Structure of the Repo
 
-Note: add hidden directories in the tree
 
 ```
 .
@@ -123,10 +122,16 @@ token = <personal-access-token>
 
 where `DEFAULT` is the default profile. We can work with different profiles, associated with different workspaces, but won't use them in the scope of the PoC since we are working within one workspace only. For more info on profiles, https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles
 
-### 2. The template creation with DBX
-The creation of Databricks template requires the installation of DBX. Follow https://dbx.readthedocs.io/en/latest/guides/python/python_quickstart/
+### 2. The repository creation with DBX
+The creation of Databricks template requires the installation of DBX. Follow https://dbx.readthedocs.io/en/latest/guides/python/python_quickstart/. Essentially you can define a Python environment (with conda or venv) and run
 
-If you want to create an empty template, you basically need to initiate your project like this:
+```
+pip install dbx
+```
+
+Now you have the choice:
+
+1. If you want to create a default empty template (), you basically need to initiate your project like this:
 
 ```
 dbx init -p \
@@ -137,7 +142,23 @@ dbx init -p \
     --no-input
 ```
 
-If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead.  
+2. If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead, and modify the code for your own use case inside the package folder, here called databricks_poc_template. If you want to change that folder name, then also replace that name within these files:
+
+- Makefile
+
+- .github/workflows/ci.yml
+
+- .github/workflows/cd_prod.yml
+
+- conf/deployment.yml
+
+- .coveragerc
+
+- setup.py
+
+- sonar-project.properties
+
+- the *.py files contained in the package folder
     
 ## Instructions to reproduce the different steps
 
