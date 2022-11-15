@@ -1,4 +1,10 @@
 [![CI pipeline](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/ci.yml)
+[![CD to Staging](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/cd_staging.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/cd_staging.yml)
+[![CD to Prod](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/cd_prod.yml/badge.svg)](https://github.com/pdemeulenaer/databricks-poc-template/actions/workflows/cd_prod.yml)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_databricks-poc-template&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_databricks-poc-template)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_databricks-poc-template&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_databricks-poc-template)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_databricks-poc-template&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_databricks-poc-template)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pdemeulenaer_databricks-poc-template&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pdemeulenaer_databricks-poc-template)
 
 
 # databricks-poc-template
