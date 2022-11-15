@@ -2,6 +2,12 @@
 
 # databricks-poc-template
 
+## Intro
+
+This repository consists of a template that allows to develop and deploy a dummy machine learning model to a target Databricks workspace. As showed below, it is heavily based on the `dbx` template, with some additions and modifications.
+
+
+
 ## Structure of the Repo
 
 
@@ -71,23 +77,6 @@
         └── sample_test.py
 ```
 
-
-## Intro
-
-This repository consists of a template that allows to develop and deploy a dummy machine learning model to a target Databricks workspace.
-
-The development and deployment lifecycle span on these environments:
-
-1. Development
-
-2. Staging
-
-3. UAT (or QA, or pre-prod)
-
-4. Production
-
-In this template, we work within a *single* Databricks workspace, so that the different environments are materialized by different Databricks clusters (another, more realistic approach would be to differentiate the environments using multiple Databricks workspaces). While the `Development` environment consists of a personal (often single node) interactive cluster, the other environments are materialized with 3 cluster pools 
-
 ## Prerequisites
 
 ### 1. How to set up your environment
@@ -98,7 +87,7 @@ To be able to connect to the Databricks workspace from the command line, you nee
 pip install databricks-cli
 ```
 
-Then you can configure the cli, using a PAT, a personal access token that should have been generated beforehand within the Databricks workspace:
+Then you can configure the cli, using a PAT, a personal access token that should have been [generated beforehand within the Databricks workspace](https://docs.databricks.com/dev-tools/api/latest/authentication.html#generate-a-personal-access-token):
 
 ```
 databricks configure --token
@@ -182,6 +171,20 @@ This command will create your personal repository under `/Repos/<username>/datab
 databricks repos create --url https://github.com/pdemeulenaer/databricks_poc_template --provider github
 ```
 
+## The environments
+
+The development and deployment lifecycle span on these environments:
+
+1. Development
+
+2. Staging
+
+3. UAT (or QA, or pre-prod)
+
+4. Production
+
+In this template, we work within a *single* Databricks workspace, so that the different environments are materialized by different Databricks clusters (another, more realistic approach would be to differentiate the environments using multiple Databricks workspaces). While the `Development` environment consists of a personal (often single node) interactive cluster, the other environments are materialized with 3 cluster pools 
+
 ## The dummy use case and how to modify it
 
 It consists of an ETL and a supervised classification:
@@ -227,7 +230,7 @@ See the process flow diagram
 
 - TODO: add how to add the repo into Github
 
-- TODO: add how to add `.pylintrc` into `pyproject.toml`
+- TODO: add how to add `.pylintrc` into `pyproject.toml` (see https://github.com/PyCQA/pylint/issues/3181 and https://pylint.pycqa.org/en/latest/user_guide/usage/run.html)
 
 
 
