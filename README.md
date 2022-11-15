@@ -81,7 +81,7 @@ This repository consists of a template that allows to develop and deploy a dummy
 
 ### 1. How to set up your environment
 
-To be able to connect to the Databricks workspace from the command line, you need first to install the package databricks-cli (https://docs.databricks.com/dev-tools/cli/index.html) in your python environment:
+To be able to connect to the Databricks workspace from the command line, you need first to install the package [databricks-cli](https://docs.databricks.com/dev-tools/cli/index.html) in your python environment:
 
 ```
 pip install databricks-cli
@@ -111,7 +111,7 @@ token = <personal-access-token>
 where `DEFAULT` is the default profile. We can work with different profiles, associated with different workspaces, but won't use them in the scope of the PoC since we are working within one workspace only. For more info on profiles, https://docs.databricks.com/dev-tools/cli/index.html#connection-profiles
 
 ### 2. The repository creation with DBX
-The creation of Databricks template requires the installation of DBX. Follow https://dbx.readthedocs.io/en/latest/guides/python/python_quickstart/. Essentially you can define a Python environment (with conda or venv) and run
+The creation of Databricks template requires the installation of `dbx`. Follow https://dbx.readthedocs.io/en/latest/guides/python/python_quickstart/. Essentially you can define a Python environment (with conda or venv) and run
 
 ```
 pip install dbx
@@ -119,7 +119,7 @@ pip install dbx
 
 Now you have the choice:
 
-1. **Empty template**: If you want to create a default empty template, you basically need to initiate your project like this:
+1. **Empty template**: If you want to create a default empty `dbx` template, you basically need to initiate your project like this:
 
 ```
 dbx init -p \
@@ -130,7 +130,7 @@ dbx init -p \
     --no-input
 ```
 
-You then have to create a Github repository. You can do that in Github UI (do not tick the README and .gitignore files, as they are generated automatically by `dbx init`). Then you can upload the dbx-generated local repo to Github by using:
+You then have to create a Github repository. You can do that in Github UI (do not tick the `README.md` and `.gitignore` files, as they are generated automatically by `dbx init`). Then you can upload the dbx-generated local repo to Github by using:
 
 ```
 git add -A
@@ -173,7 +173,7 @@ databricks repos create --url https://github.com/pdemeulenaer/databricks_poc_tem
 
 ## The environments
 
-The development and deployment lifecycle span on these environments:
+This repo fleshes out the development and deployment lifecycle. The different phases span on these environments:
 
 1. Development
 
@@ -183,13 +183,13 @@ The development and deployment lifecycle span on these environments:
 
 4. Production
 
-In this template, we work within a *single* Databricks workspace, so that the different environments are materialized by different Databricks clusters (another, more realistic approach would be to differentiate the environments using multiple Databricks workspaces). While the `Development` environment consists of a personal (often single node) interactive cluster, the other environments are materialized with 3 cluster pools 
+In this template, we work within a *single* Databricks workspace, so that the different environments are materialized by different Databricks clusters (another, more realistic approach would be to differentiate the environments using *multiple* Databricks workspaces). While the `Development` environment consists of a personal (often single node) interactive cluster for each user, the other environments are materialized with a cluster pool each.
 
 ## The dummy use case and how to modify it
 
 It consists of an ETL and a supervised classification:
 
-- The ETL job generates data
+- The ETL job generates data TODO!!!
     
 ## How to run the CICD pipeline
 
