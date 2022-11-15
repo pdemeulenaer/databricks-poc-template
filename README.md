@@ -172,7 +172,22 @@ git push -u origin main
 
 - the *.py files contained in the package folder
 
-**The dummy use case**: it consists of an ETL and a supervised classification. The ETL job generates data
+In either cases you will then have to connect your repository to the Databricks Repos, so that any git action you perform locally or within the Databricks workspace are synchronized. That can be done either from the Databricks Repos UI or via the Databricks CLI:
+
+```bash
+databricks repos create --url <your repo URL> --provider <your-provider>
+```
+This command will create your personal repository under `/Repos/<username>/databricks_poc_template`. So for example for this repo, it would be:
+
+```bash
+databricks repos create --url https://github.com/pdemeulenaer/databricks_poc_template --provider github
+```
+
+## The dummy use case and how to modify it
+
+It consists of an ETL and a supervised classification:
+
+- The ETL job generates data
     
 ## Instructions to reproduce the different steps
 
