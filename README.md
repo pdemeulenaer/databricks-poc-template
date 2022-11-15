@@ -23,7 +23,6 @@ This repository consists of a template that allows to develop and deploy a dummy
 ```
 .
 ├── conf
-│   ├── deployment_original.yml
 │   ├── deployment.yml
 │   └── tasks
 │       ├── etl_1_data_generation.yml
@@ -41,7 +40,6 @@ This repository consists of a template that allows to develop and deploy a dummy
 │       ├── task_transition_to_prod.yml
 │       ├── task_validation_dev.yml
 │       └── task_validation_staging.yml
-├── .coveragerc
 ├── databricks_poc_template
 │   ├── common.py
 │   ├── __init__.py
@@ -73,7 +71,6 @@ This repository consists of a template that allows to develop and deploy a dummy
 │   └── sample_notebook.py
 ├── .pylintrc
 ├── pyproject.toml
-├── pytest.ini
 ├── README.md
 ├── setup.py
 ├── sonar-project.properties
