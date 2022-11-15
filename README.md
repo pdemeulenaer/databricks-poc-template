@@ -72,7 +72,6 @@
 ```
 
 
-
 ## Intro
 
 This repository consists of a template that allows to develop and deploy a dummy machine learning model to a target Databricks workspace.
@@ -189,7 +188,32 @@ It consists of an ETL and a supervised classification:
 
 - The ETL job generates data
     
-## Instructions to reproduce the different steps
+## How to run the CICD pipeline
+
+First thing is to set the following secrets or environment variables for your CI provider (go to Github UI > your repo > Settings > Secrets > Actions):
+- `DATABRICKS_HOST`
+- `DATABRICKS_TOKEN`
+
+If you additionally want to plug SonarCloud to the CI pipeline, then a token has to be generated there and copied within Github:
+
+- `SONAR_TOKEN`
+
+The necessary files for the CICD pipeline are: 
+
+- `ci.yml`: the CI file
+
+- `cd_staging.yml`: the CD of training code to Staging and inference code to UAT
+
+- `cd_prod.yml`: the CD of inference code to Prod
+
+- `.pylintrc`: the configuration file for `pylint`
+
+- `pyproject.toml`: this file supersedes the use of any `pytest.ini` and `.coveragerc` for the test and coverage calculations
+
+- `Makefile`: that file contains the collection of relevant `make` commands, which are called during CI and CD steps. 
+
+
+## Testing and releasing via CI pipeline
 
 See the process flow diagram
 
@@ -203,7 +227,10 @@ See the process flow diagram
 
 - TODO: add how to add the repo into Github
 
-- TODO: add how to add this repo in Databricks Repos
+- TODO: add how to add `.pylintrc` into `pyproject.toml`
+
+
+
 
 
 ======================
