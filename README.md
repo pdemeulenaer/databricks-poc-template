@@ -131,7 +131,7 @@ pip install dbx
 
 Now you have the choice:
 
-1. If you want to create a default empty template (), you basically need to initiate your project like this:
+1. **Empty template**: If you want to create a default empty template, you basically need to initiate your project like this:
 
 ```
 dbx init -p \
@@ -142,7 +142,19 @@ dbx init -p \
     --no-input
 ```
 
-2. If you want to create a pre-filled template with a use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead, and modify the code for your own use case inside the package folder, here called databricks_poc_template. If you want to change that folder name, then also replace that name within these files:
+You then have to create a Github repository. You can do that in Github UI (do not tick the README and .gitignore files, as they are generated automatically by `dbx init`). Then you can upload the dbx-generated local repo to Github by using:
+
+```
+git add -A
+git commit -m "first commit"
+git branch -M main
+git remote add origin git@github.com:<your github id>/<your project name>.git
+git push -u origin main
+```
+
+(Be sure to be allowed to push to Github, by uploading ssh keys to Github if you never did that earlier. One can see how to generate an ssh key [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and then upload it to your Github settings [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account))
+
+2. **pre-filled template**: If you want to create a pre-filled template with a (dummy: iris dataset classification) use-case and adapted CICD pipeline (including linting, coverage calculation, Sonar code analysis), just fork this repo instead, and modify the code for your own use case inside the package folder, here called databricks_poc_template. If you want to change that folder name, then also replace that name within these files:
 
 - Makefile
 
@@ -159,8 +171,12 @@ dbx init -p \
 - sonar-project.properties
 
 - the *.py files contained in the package folder
+
+**The dummy use case**: it consists of an ETL and a supervised classification. The ETL job generates data
     
 ## Instructions to reproduce the different steps
+
+See the process flow diagram
 
 ## TODO List
 
