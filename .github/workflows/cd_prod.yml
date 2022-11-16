@@ -16,20 +16,11 @@ jobs:
     env:
       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }} 
       DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
-      # DATABRICKS_JOBS_API_VERSION: 2.1
 
     steps:
-      # - uses: actions/checkout@v1
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis   
-
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip' # caching pip dependencies
-          cache-dependency-path: setup.py
 
       # Get the version number for the release
       - name: Get the version number
@@ -40,6 +31,7 @@ jobs:
           version=${s%'"'*}
           echo v"$version"
           echo "version_env=v$version" >> $GITHUB_ENV
+          echo Running CD to Prod for version v"$version"     
 
       # Create the release for the version number (will fail if version number was not bumped)
       - name: Create Release
@@ -53,7 +45,14 @@ jobs:
           body: |
             Release for version ${{ env.version_env }}.
           draft: false
-          prerelease: false          
+          prerelease: false   
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+          cache-dependency-path: setup.py                 
 
       - name: Install pip
         run: |
@@ -75,4 +74,3 @@ jobs:
       - name: Deploy the monitoring job to PROD
         run: |
           make monitoring_prod           
-
