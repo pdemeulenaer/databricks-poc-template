@@ -168,7 +168,7 @@ git push -u origin main
 
 - conf/deployment.yml
 
-- .coveragerc
+- pyproject.toml
 
 - setup.py
 
