@@ -33,7 +33,7 @@ environments:
       #############################################################
       # ETL workflow
       #############################################################
-      - name: "etl-workflow"
+      - name: "template-etl-workflow"
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
@@ -63,7 +63,7 @@ environments:
       # Training workflow
       #############################################################
       # DEV
-      - name: "train-workflow-dev"
+      - name: "template-train-workflow-dev"
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster          
@@ -85,7 +85,7 @@ environments:
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_validation_dev.yml" ]
 
       # STAGING
-      - name: "train-workflow-staging"
+      - name: "template-train-workflow-staging"
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster   
@@ -113,7 +113,7 @@ environments:
       #############################################################
       # Inference workflow
       #############################################################
-      - name: "inference-workflow-dev"
+      - name: "template-inference-workflow-dev"
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
@@ -129,7 +129,7 @@ environments:
               python_file: "file://databricks_poc_template/tasks/task_inference.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_inference_dev.yml" ]         
 
-      - name: "inference-workflow-uat"
+      - name: "template-inference-workflow-uat"
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
@@ -146,7 +146,7 @@ environments:
               python_file: "file://databricks_poc_template/tasks/task_inference.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_inference_uat.yml" ]            
 
-      - name: "inference-workflow-prod"
+      - name: "template-inference-workflow-prod"
         job_clusters:
           - job_cluster_key: "default"
             <<: *prod-pool-cluster
@@ -166,7 +166,7 @@ environments:
       #############################################################
       # Transition to Prod workflow
       #############################################################
-      - name: "transition-to-prod-workflow"
+      - name: "template-transition-to-prod-workflow"
         job_clusters:
           - job_cluster_key: "default"
             <<: *prod-pool-cluster          
@@ -181,7 +181,7 @@ environments:
       #############################################################
       # Monitoring workflow
       #############################################################
-      - name: "monitoring-workflow-dev"
+      - name: "template-monitoring-workflow-dev"
         job_clusters:
           - job_cluster_key: "default"
             <<: *dev-pool-cluster
@@ -198,7 +198,7 @@ environments:
               python_file: "file://databricks_poc_template/tasks/task_monitoring.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_dev.yml" ]    
 
-      - name: "monitoring-workflow-uat"
+      - name: "template-monitoring-workflow-uat"
         job_clusters:
           - job_cluster_key: "default"
             <<: *staging-pool-cluster
@@ -215,7 +215,7 @@ environments:
               python_file: "file://databricks_poc_template/tasks/task_monitoring.py"
               parameters: [ "--conf-file", "file:fuse://conf/tasks/task_monitoring_uat.yml" ]   
 
-      - name: "monitoring-workflow-prod"
+      - name: "template-monitoring-workflow-prod"
         job_clusters:
           - job_cluster_key: "default"
             <<: *prod-pool-cluster
