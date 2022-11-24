@@ -236,7 +236,8 @@ class TrainTask(Task):
                                         model_name,
                                         registered_model_name=model_name,
                                         signature=signature,
-                                        input_example=input_example)           
+                                        input_example=input_example, 
+                                        extra_pip_requirements=["mlflow==1.30"])           
 
                 self.logger.info("Step 3 completed: model training and saved to MLFlow")                
 
