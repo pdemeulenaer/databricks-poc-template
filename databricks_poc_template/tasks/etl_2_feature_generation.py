@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from pyspark.sql.functions import *
 from databricks import feature_store
+from databricks.feature_store.online_store_spec import AmazonRdsMySqlSpec
 
 
 class ETL2FeatureGenerationTask(Task):
@@ -66,7 +67,25 @@ class ETL2FeatureGenerationTask(Task):
                 name=f"{fs_schema}.{fs_table}",
                 df=features_df,
                 mode="merge",
-            )               
+            )        
+
+        # Online feature store (optional, only if online scoring needed)
+        online_store = AmazonRdsMySqlSpec(
+            hostname='dabafest-2.cluster-cud3mride4qz.eu-west-1.rds.amazonaws.com',
+            port=3306,
+            database_name='dabafest',
+            table_name='feature_store_online_iris_features',
+            read_secret_prefix='dabafest/mysql',
+            write_secret_prefix='dabafestw/mysql'
+        )
+
+        # Push the feature table to online store.
+        fs.publish_table(
+            name=f"{fs_schema}.{fs_table}", 
+            online_store=online_store,
+            mode='overwrite'
+        )        
+
 
         self.logger.info("Dataset successfully written to the Feature Store")
 

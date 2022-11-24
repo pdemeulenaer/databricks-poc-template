@@ -30,44 +30,44 @@ test:
 
 # For executions within the CI/CD pipeline
 etl_workflow:
-	dbx deploy etl-workflow
-	dbx launch etl-workflow --trace	
+	dbx deploy template-etl-workflow
+	dbx launch template-etl-workflow --trace	
 
 train_workflow_dev:
-	dbx deploy train-workflow-dev
-	dbx launch train-workflow-dev --trace	
+	dbx deploy template-train-workflow-dev
+	dbx launch template-train-workflow-dev --trace	
 
 train_workflow_staging:
-	dbx deploy train-workflow-staging
-	dbx launch train-workflow-staging --trace			
+	dbx deploy template-train-workflow-staging
+	dbx launch template-train-workflow-staging --trace			
 
 inference_dev:
-	dbx deploy inference-workflow-dev
-	dbx launch inference-workflow-dev --trace	
+	dbx deploy template-inference-workflow-dev
+	dbx launch template-inference-workflow-dev --trace	
 
 inference_uat: # TODO:
-	dbx deploy inference-workflow-uat
-	dbx launch inference-workflow-uat --trace	
+	dbx deploy template-inference-workflow-uat
+	dbx launch template-inference-workflow-uat --trace	
 
 inference_prod: # TODO:
-	dbx deploy inference-workflow-prod
-	dbx launch inference-workflow-prod --trace	
+	dbx deploy template-inference-workflow-prod
+	dbx launch template-inference-workflow-prod --trace	
 
 transition_prod:
-	dbx deploy transition-to-prod-workflow
-	dbx launch transition-to-prod-workflow --trace	
+	dbx deploy template-transition-to-prod-workflow
+	dbx launch template-transition-to-prod-workflow --trace	
 
 monitoring_dev:
-	dbx deploy monitoring-workflow-dev
-	dbx launch monitoring-workflow-dev --trace		
+	dbx deploy template-monitoring-workflow-dev
+	dbx launch template-monitoring-workflow-dev --trace		
 
 monitoring_uat: # TODO:
-	dbx deploy monitoring-workflow-uat
-	dbx launch monitoring-workflow-uat --trace	
+	dbx deploy template-monitoring-workflow-uat
+	dbx launch template-monitoring-workflow-uat --trace	
 
 monitoring_prod: # TODO:
-	dbx deploy monitoring-workflow-prod
-	dbx launch monitoring-workflow-prod --trace					
+	dbx deploy template-monitoring-workflow-prod
+	dbx launch template-monitoring-workflow-prod --trace					
 
 message:
 	echo hello $(foo)
