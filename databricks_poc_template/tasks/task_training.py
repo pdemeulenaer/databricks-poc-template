@@ -228,17 +228,17 @@ class TrainTask(Task):
                     flavor=mlflow.sklearn,
                     training_set=training_set,
                     extra_pip_requirements=["mlflow==1.30"],    
-                    # registered_model_name=model_name,
+                    registered_model_name=model_name,
                 )
                 
                 # Register the model to the Model Registry
-                print(mlflow.get_registry_uri())
-                mlflow.sklearn.log_model(model, 
-                                        model_name,
-                                        registered_model_name=model_name,
-                                        signature=signature,
-                                        input_example=input_example, 
-                                        extra_pip_requirements=["mlflow==1.30"])           
+                # print(mlflow.get_registry_uri())
+                # mlflow.sklearn.log_model(model, 
+                #                         model_name,
+                #                         registered_model_name=model_name,
+                #                         signature=signature,
+                #                         input_example=input_example, 
+                #                         extra_pip_requirements=["mlflow==1.30"])           
 
                 self.logger.info("Step 3 completed: model training and saved to MLFlow")                
 
