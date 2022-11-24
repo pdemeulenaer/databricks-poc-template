@@ -227,6 +227,7 @@ class TrainTask(Task):
                     artifact_path=model_name,
                     flavor=mlflow.sklearn,
                     training_set=training_set,
+                    extra_pip_requirements=["mlflow==1.30"],    
                     # registered_model_name=model_name,
                 )
                 
