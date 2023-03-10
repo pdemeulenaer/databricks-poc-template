@@ -1,7 +1,6 @@
 install:
-	pip install --upgrade pip &&\
-		pip install -r unit-requirements.txt &&\
-        pip install -e .
+	python -m pip install --upgrade pip &&\
+        pip install -e .[local,test]
         
 lint:
 	python -m pylint --fail-under=-200.5 --rcfile .pylintrc databricks_poc_template/ tests/ -r n --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}" > pylint_report.txt      #pylint --disable=R,C model.py 
