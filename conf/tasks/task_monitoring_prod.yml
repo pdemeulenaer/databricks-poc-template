@@ -14,7 +14,7 @@ data:
 
 model:
   model_name: "IrisClassificationRF"
-  model_stage: "Prod"   
+  model_stage: "Production"   
   experiment_name: "/Shared/simple-rf-sklearn_experiment"
   hyperparameters_grid:
     max_depth: [3, 10]
