@@ -12,11 +12,6 @@ import mlflow
 from databricks import feature_store
 from mlflow.tracking import MlflowClient
 
-# Monitoring
-from evidently.model_profile import Profile
-from evidently.model_profile.sections import DataDriftProfileSection, ClassificationPerformanceProfileSection
-from evidently.pipeline.column_mapping import ColumnMapping
-
 
 class InferenceTask(Task):
 
