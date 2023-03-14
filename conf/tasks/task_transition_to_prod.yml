@@ -2,6 +2,7 @@ environment: "staging"
 
 model:
   model_name: "IrisClassificationRF"
+  model_stage: "Staging"   
   experiment_name: "/Shared/simple-rf-sklearn_experiment"
   hyperparameters_grid:
     max_depth: [3, 10]
