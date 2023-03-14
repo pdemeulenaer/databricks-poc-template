@@ -86,10 +86,6 @@ class ValidationTask(Task):
         # 2. Load model from MLflow Model Registry
         # ========================================
         try:   
-            # Load model from MLflow experiment
-            # Conditions:
-            # - model accuracy should be higher than pre-defined threshold (defined in model.json)
-
             # Initialize MLflow client
             client = mlflow.tracking.MlflowClient()
             model_names = [m.name for m in client.search_registered_models()]
