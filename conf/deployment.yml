@@ -18,12 +18,12 @@ custom:
   staging-pool-cluster: &staging-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
-      instance_pool_id: "1118-212646-ease1-pool-m497c557" # "1107-090611-akin92-pool-vroqllvm"
+      #instance_pool_id: "1118-212646-ease1-pool-m497c557" # "1107-090611-akin92-pool-vroqllvm"
 
   prod-pool-cluster: &prod-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
-      instance_pool_id: "1118-212901-toner1-pool-rjt1zhfv" # "1107-090742-pews93-pool-71i9rjjm"            
+      #instance_pool_id: "1118-212901-toner1-pool-rjt1zhfv" # "1107-090742-pews93-pool-71i9rjjm"            
 
 
 environments:
