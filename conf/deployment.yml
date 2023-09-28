@@ -13,7 +13,7 @@ custom:
   dev-pool-cluster: &dev-pool-cluster
     new_cluster:
       <<: *basic-cluster-props
-      instance_pool_id: "1118-212954-vole2-pool-eh309xxn" # "1027-141550-dogs36-pool-qq92uldu"
+      #instance_pool_id: "1118-212954-vole2-pool-eh309xxn" # "1027-141550-dogs36-pool-qq92uldu"
 
   staging-pool-cluster: &staging-pool-cluster
     new_cluster:
